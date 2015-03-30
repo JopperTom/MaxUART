@@ -1,0 +1,323 @@
+#ifndef PORT_C
+#define PORT_C
+
+#include <intrinsics.h> // MAXQ2000 specific stuff
+#include <iomaxq200x.h> // ditto
+#include "port.h"
+#include "interface.c"
+#include "RT99reg.h"
+
+
+#define INT_DRIVEN
+//#define POLLED
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+#ifdef INT_DRIVEN
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+
+
+// This static variable com is
+// the pointer to the port that will be serviced by the
+// ISR.  
+static PORT *com = NULL;
+
+//static void ( __interrupt * old_break_handler )();
+
+// This is the interrupt service routine for the COM port.
+// It sits in a loop reading the interrrupt ID register, then
+// servicing one of the five different types of 16550 interrupts.
+#pragma vector = 0
+__interrupt void interrupt_service_routine()
+{
+  unsigned char c;
+
+  __enable_interrupt();
+  if (EIF0 == 0x01) 
+  {
+    while(1) // Stay in loop while a valid interrupt exists
+    {
+      switch ( (rreg( com->uart_base + IIR )) & 0x0F ) // Check the LSB of the IIR
+      {
+        // If the present interrupt is due to a modem status line
+        // change, the MSR is read to clear the interrupt, but
+        // nothing else is done.
+        case IIR_MODEM_STATUS :
+          rreg( com->uart_base + MSR );
+putchar('m');
+          break;
+
+        // If the interrupt is due to the transmit holding register
+        // being ready for another character, I first check to see
+        // if any characters are left in the TX buffer.  If
+        // not, Transmit interrupts are disabled.  Otherwise, the
+        // next character is extracted from the buffer and written
+        // to the UART.
+        case IIR_TRANSMIT :
+          if ( ((com->out.tail_index) ) == ((com->out.head_index) ) )
+             wreg( com->uart_base + IER, IER_RX_DATA );
+          else 
+          {
+            c = com->out.buffer[ com->out.head_index++ ];
+            wreg( com->uart_base + THR, c );
+putchar('t');
+          }
+          break;
+
+        // When a new character comes in and generates an
+        // interrupt, it is read in.  If there is room in the input
+        // buffer, it is stored, otherwise it is discarded.
+        case IIR_RECEIVE :
+          c = (unsigned char) rreg( com->uart_base + RBR );
+//          if ( ((com->in.tail_index+1) ) != (com->in.head_index ) )
+//            com->in.buffer[ com->in.tail_index++ ] =  c ;
+putchar('r');
+          break;
+
+        // All this code does is read the Line Status register, to
+        // clear the source of the interrupt.
+        case IIR_LINE_STATUS :
+          rreg( com->uart_base + LSR );
+putchar('s');
+          break;
+
+        // All this code does is read the Receive Buffer register, to
+        // clear the source of the interrupt.
+        case IIR_CHAR_TIMEOUT :
+          rreg( com->uart_base + RBR );
+putchar('o');
+          break;
+
+        // If there are no valid interrupts left to service, an EOI
+        // is written to the 8259 interrupt controller, and the
+        // routine exits.
+         case 0x01:
+          __disable_interrupt();
+          return;
+        case 0x03:
+          __disable_interrupt();
+          putchar('3');
+          return;
+        case 0x05:
+          __disable_interrupt();
+          putchar('5');
+          return;
+        case 0x07:
+          __disable_interrupt();
+          putchar('7');
+          return;
+        case 0x09:
+          __disable_interrupt();
+          putchar('9');
+          return;
+        case 0x0B:
+          __disable_interrupt();
+          putchar('B');
+          return;
+        case 0x0D:
+          __disable_interrupt();
+          putchar('D');
+          return;
+        case 0x0F:
+          __disable_interrupt();
+          putchar('F');
+          return;
+        default:
+          __disable_interrupt();
+          putchar('X');
+          return;
+      } // end switch()
+    } // end while()
+  } // end if()
+  else return;
+} // end ISR
+
+// This routine opens an RS-232 port up.  This means it
+// allocates space for a PORT strcture, initializes the
+// input and output buffers, stores the uart address and
+// the interrupt number.  It then gets and stores the
+// interrupt vector presently set up for the UART, then
+// installs its own.  It also sets up a handler to
+// intercept the CTRL-BREAK handler.  Finally, it tells the
+// interrupt controller to begin accepting interrupts
+// on the IRQ line used by this COM port.
+PORT *port_open( int address, int int_number )
+{
+//  unsigned char temp;
+  PORT *port;
+port = malloc( sizeof( PORT ));
+  if ( port == NULL) return( NULL );
+  com = port;
+//  port->in.tail_index = port->in.head_index = 0;
+  port->out.tail_index = port->out.head_index = 0;
+  port->uart_base = address;
+
+//  port->irq_mask = (char) 1 << (int_number % 8 );
+//  port->interrupt_number = int_number;
+//  port->old_vector = getvect( int_number );
+/////////  __set_interrupt_vector( interrupt_service_routine );
+//  old_break_handler = getvect( BREAK_VECTOR );
+//  __set_interrupt_vector( BREAK_VECTOR, break_handler );
+//  temp = (char) rreg( INT_CONTROLLER + 1 );
+//  wreg( INT_CONTROLLER + 1, ~port->irq_mask & temp );
+  return( port );
+}
+
+//void XMIT_Init(void)
+//{
+//  wreg(FCR,0x00); // Disable FIFO
+//  wreg(LCR,LCR_DLAB); //DLAB = 1
+//  wreg(DLM,0x00); //DLM = 00 & DLL = 06 -> 38,400 BPS
+//  wreg(DLL,0x06); //DLM = 00 & DLL = 06 -> 38,400 BPS
+
+//  wreg(LCR,0x00); //DLAB = 0
+
+//  wreg(LCR,0x03); // 8N1
+  //wreg(EFR,0xC0); // Auto CTS/RTS
+//  wreg(MCR,0x00); // clear loopback
+//  wreg(IER,0x0F); // **Enable Interrupts**
+//}
+
+
+// This routine establishes the operating parameters for a
+// port after it has been opened.  This means it sets the
+// baud rate, parity, number of data bits, and number of
+// stop bits.  Interrupts are disabled before the routine
+// starts changing registers, and are then reenabled after
+// the changes are complete.
+void port_set( PORT *port,
+               long speed,
+               char parity,
+               int data,
+               int stopbits, 
+               int fifo)
+{
+  unsigned char lcr_out;
+  unsigned char low_divisor;
+  unsigned char high_divisor;
+  IFACE_Init();
+
+  // First disable all interrupts from the port.  I also read
+  // RBR just in case there is a char sitting there ready to
+  // generate an interupt.
+  wreg( port->uart_base + IER, 0 );
+  rreg( port->uart_base );
+
+  // Enable or Disable FIFO
+  wreg( port->uart_base + FCR, fifo );
+
+  // Writing the baud rate means first enabling the divisor
+  // latch registers, then writing the 16 bit divisor int
+  // two steps, then disabling the divisor latch so the other
+  // registers can be accessed normally.
+  low_divisor = (char) (230400L / speed ) & 0xff;
+  high_divisor = (char) ((230400L /  speed ) >> 8);
+  wreg( port->uart_base + LCR, LCR_DLAB ); // Set DLAB = 1
+  wreg( port->uart_base + DLL, low_divisor );
+  wreg( port->uart_base + DLM, high_divisor );
+  wreg( port->uart_base + LCR, 0 ); // Set DLAB = 0
+
+
+  // Setting up the line control register establishes the
+  // parity, number of bits, and number of stop bits.
+  if ( parity== 'E' )
+    lcr_out = LCR_EVEN_PARITY;
+  else if ( parity == 'O' )
+    lcr_out = LCR_ODD_PARITY;
+  else
+    lcr_out = LCR_NO_PARITY;
+
+  if ( stopbits == 2 )
+    lcr_out |= LCR_2_STOP_BITS;
+
+  if ( data == 6 )
+    lcr_out |= LCR_6_DATA_BITS;
+  else if ( data == 7 )
+    lcr_out |= LCR_7_DATA_BITS;
+  else if ( data == 8 )
+    lcr_out |= LCR_8_DATA_BITS;
+
+  wreg( port->uart_base + LCR, lcr_out ); // Set Byte config
+
+//  mcr_out = MCR_RTS;
+  wreg( port->uart_base + MCR, 0x00 ); // Clear Loopback
+
+  // Finally, restart interrupts, and exit.
+   PD0   = 0x00; // Set port0 as input
+   EIE0  = 0x01; // enable interrupt 0
+   EIES0 = 0x01; // Set up falling edge trigger
+   IMR  |= 0x01; // enable interrupts for module 1
+   // Disables the TX Int and leave the RX Int enabled
+   wreg( port->uart_base + IER, IER_RX_DATA );
+   wreg( port->uart_base + IER, 0x00 );
+
+
+}
+
+// In order to close the port, I first disable interrupts
+// at the UART, then disable interrupts from the UART's IRQ
+// line at the interrupt controller.  DTR, RTS, and
+// OUT2 are all dropped. The UART's previous interrupt
+// handler is restored, and the old break handler
+// is restored.  Finally, the port data structure is freed,
+// and things should be completely back to normal.
+void port_close( PORT *port )
+{
+   //  unsigned char temp;
+   EIE0  = 0x00;  // disable interrupt 0
+   IMR  |= 0x00;  // disable interrupts for module 1
+   wreg( port->uart_base + IER, 0 );
+   //  temp = (unsigned char) rreg( INT_CONTROLLER + 1 );
+   //  wreg( INT_CONTROLLER + 1, port->irq_mask | temp );
+   //  setvect( port->interrupt_number, port->old_vector );
+   //  setvect( BREAK_VECTOR, old_break_handler );
+   wreg( port->uart_base + MCR, 0 );
+   free( port );
+}
+
+// This routine is used to send a single character out to
+// the UART.  If there is room in the output buffer, the
+// character is inserted in the buffer.  Then the routine
+// checks to see if Transmit interrupts are presently
+// enabled for this UART.  If they aren't, they are turned
+// on so the ISR will see this new character.
+int port_putc( unsigned char c, PORT *port )
+{
+  if ( ((port->out.tail_index+1) ) == ((port->out.head_index) ) ){
+    return( -1 );}
+  port->out.buffer[ port->out.tail_index ] = c;
+  port->out.tail_index += 1;
+  if (( rreg( port->uart_base + IER ) & IER_THRE) == 0 )
+   wreg( port->uart_base+IER, IER_THRE );//| IER_RX_DATA
+  return( c );
+}
+
+// This routine checks to see if there is a character
+// available in the input buffer for the specified port.
+// If there is, it is pulled out and returned to the
+// caller.
+int port_getc(PORT *port)
+{
+//  if ( ((port->in.tail_index) ) == ((port->in.head_index) ) )
+//    return( -1 );
+// else
+//    return( port->in.buffer[ port->in.head_index++ ] );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+#endif // INT_DRIVEN
+
+#else
+#ifdef POLLED
+// PLACE polled FUNCTIONS HERE
+
+
+
+
+#endif // POLLED
+
+#endif

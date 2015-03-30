@@ -1,0 +1,6 @@
+"H:\Cypress\USB\Target\Lib\Ezusb\Ezusb.lib",
+"EZ0001.obj" 
+TO "EZ0001" 
+RAMSIZE(256) 
+CODE( 0x4000 )
+XDATA( 0x5000 )

@@ -1,0 +1,14 @@
+Decoding SPI serial bus transactions from the beginning of the waveform screen.
+Please wait...
+SDO: 02 0D 0D 0D 81 05 80 4F 
+SDI: 00 11 00 C2 00 11 81 05 
+
+SDO: 81 07 02 0D 0D 0D 81 05 
+SDI: 80 4F 81 07 00 C2 00 11 
+
+SDO: 80 4F 81 07 02 0D 0D 0D 
+SDI: 81 05 80 4F 81 07 00 C1 
+
+SDO: 02 0D 0D 0D 
+SDI: 00 11 00 C1 
+

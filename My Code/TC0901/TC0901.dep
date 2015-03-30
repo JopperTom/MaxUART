@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>0</fileVersion>
+  <configuration>
+    <name>Debug</name>
+    <file>
+      <name>$PROJ_DIR$\TC0901 .c</name>
+      <outputs>
+        <name>$PROJ_DIR$\Debug\Obj\TC0901 .r66</name>
+      </outputs>
+      <inputs>
+        <name>$TOOLKIT_DIR$\INC\CLIB\stdio.h</name>
+        <name>$TOOLKIT_DIR$\INC\CLIB\stdarg.h</name>
+        <name>$TOOLKIT_DIR$\INC\CLIB\sysmac.h</name>
+        <name>$TOOLKIT_DIR$\INC\CLIB\stdlib.h</name>
+        <name>$TOOLKIT_DIR$\INC\intrinsics.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomaxq200x.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomaxq.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomacro.h</name>
+        <name>$TOOLKIT_DIR$\INC\RT99reg.h</name>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\TC0298 .c</name>
+      <outputs>
+        <name>$PROJ_DIR$\Debug\Obj\TC0298 .r66</name>
+      </outputs>
+      <inputs>
+        <name>$TOOLKIT_DIR$\INC\CLIB\stdio.h</name>
+        <name>$TOOLKIT_DIR$\INC\CLIB\stdarg.h</name>
+        <name>$TOOLKIT_DIR$\INC\CLIB\sysmac.h</name>
+        <name>$TOOLKIT_DIR$\INC\intrinsics.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomaxq200x.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomaxq.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomacro.h</name>
+        <name>$TOOLKIT_DIR$\INC\RT99reg.h</name>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\TC0298.d66</name>
+      <inputs>
+        <name>$TOOLKIT_DIR$\config\lnkmaxq200x.xcl</name>
+        <name>$PROJ_DIR$\Debug\Obj\TC0298 .r66</name>
+        <name>$TOOLKIT_DIR$\LIB\clib\clmaxq20m.r66</name>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\TC0901.d66</name>
+      <inputs>
+        <name>$TOOLKIT_DIR$\config\lnkmaxq200x.xcl</name>
+        <name>$PROJ_DIR$\Debug\Obj\TC0901 .r66</name>
+        <name>$TOOLKIT_DIR$\LIB\clib\clmaxq20m.r66</name>
+      </inputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+  </configuration>
+</project>
+
+

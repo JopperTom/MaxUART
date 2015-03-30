@@ -1,0 +1,51 @@
+C51 COMPILER V6.01 DEV_IO                                                                  03/16/2005 14:02:19 PAGE 1   
+
+
+C51 COMPILER 6.01, COMPILATION OF MODULE DEV_IO
+OBJECT MODULE PLACED IN .\DEV_IO.OBJ
+COMPILER INVOKED BY: H:\Keil\C51\BIN\C51.EXE .\DEV_IO.C OPTIMIZE(6,SPEED) DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          #include <ezusb.h>
+   2          #include <ezregs.h>
+   3          #include "RT99reg.h"
+   4          
+   5          #define TNG
+   6          #define RT99_ADDR		0x1C
+   7          
+   8          // P20 off
+   9          // P21 off
+  10          // P22 on
+  11          const BYTE xdata reg_addr = 0x0D;
+  12          BYTE xdata reg_val;
+  13          
+  14          
+  15          
+  16          main()
+  17          {
+  18   1      	int i;
+  19   1      	EZUSB_InitI2C(); // Initialize EZ-USB I2C controller
+  20   1      
+  21   1      	for(i=0;i<=7;i++)
+  22   1      {
+  23   2      	EZUSB_WriteI2C(RT99_ADDR, 0x01, &reg_addr);
+  24   2      	EZUSB_ReadI2C(RT99_ADDR,0x01,&reg_val);
+  25   2      }
+  26   1      	while(1);
+  27   1      } // End of Main()
+  28          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     52    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      2    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

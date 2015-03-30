@@ -1,0 +1,130 @@
+C51 COMPILER V6.01 SPI                                                                     03/09/2005 20:51:20 PAGE 1   
+
+
+C51 COMPILER 6.01, COMPILATION OF MODULE SPI
+OBJECT MODULE PLACED IN .\spi.OBJ
+COMPILER INVOKED BY: H:\Keil\C51\BIN\C51.EXE .\spi.c DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          /*****************************************************************************
+   2          
+   3          	spi.c	4-19-00	ott
+   4          	Used to test software spi functionality on EZ-USB
+   5          	This program will do a constant write and readback loop to an
+   6          	25C320 spi EEPROM with EZ-USB as the master
+   7          	Pins used:	C0 - Chip select
+   8          				C1 - Clk
+   9          				C2 - Data OUT from EZ
+  10          				C3 - Data In to EZ
+  11          	This pins can be changed if you change the bitmasks defines here and in
+  12          	spiwrite.a51 and spiread.a51
+  13          
+  14          *****************************************************************************/
+  15          
+  16          #include <ezusb.h>
+  17          #include <ezregs.h>
+  18          
+  19          #define CSHIGH 1
+  20          #define CSLOW 0xFE
+  21          #define CLKLOW 0xFD
+  22          #define INLOW 0xFB
+  23          #define READ_CMD 3
+  24          #define WRITE_CMD 2
+  25          #define WRITE_ENABLE 6
+  26          #define WRITE_DISABLE 4
+  27          #define READ_STATUS 5
+  28          #define WRITE_STATUS 1
+  29          
+  30          /////////////////////////////////////// Prototypes
+  31          void write_25LC320 (WORD a, BYTE d);
+  32          BYTE read_25LC320 (WORD a);
+  33          void enable_25LC320 (void);
+  34          BYTE status_25LC320 (void);
+  35          void spiwritebyte (BYTE d);	//Assembly routine
+  36          BYTE spireadbyte (void);	//Assembly routine
+  37          
+  38          main()
+  39          {
+  40   1      	BYTE d;
+  41   1      	WORD a;
+  42   1      	BYTE t,x;
+  43   1      
+  44   1      	PORTCCFG &= 0xF0;	//Turn off special functions
+  45   1      	OEC |= 0x07;	//C0 = CS*, C1 = CLK, C2 = OUT from EZ, C3 = IN to EZ
+  46   1      	OEC &= 0xF7;
+  47   1      	OUTC |= CSHIGH;	//Turn CS* high
+  48   1      	CKCON &= 0xF8;	//Set stretch 0
+  49   1      	while(TRUE)
+  50   1      	{
+  51   2      		enable_25LC320();	//Enable write
+  52   2      		write_25LC320 (a,d);	//Write byte
+  53   2      		while (status_25LC320() & 1);	//Wait until done
+  54   2      		t = read_25LC320 (a);	//Try to read back
+  55   2      		if (t != d)
+C51 COMPILER V6.01 SPI                                                                     03/09/2005 20:51:20 PAGE 2   
+
+  56   2      			x=0;	//Test for read back, set breakpoint here
+  57   2      		a++;
+  58   2      		d++;
+  59   2      	}
+  60   1      }
+  61          void write_25LC320 (WORD a, BYTE d)
+  62          {
+  63   1      	OUTC &= INLOW & CLKLOW;	//Make sure signals are low
+  64   1      	OUTC &= CSLOW;	//Turn cs low
+  65   1      	spiwritebyte (WRITE_CMD);	
+  66   1      	spiwritebyte (a >> 8);
+  67   1      	spiwritebyte (a);
+  68   1      	spiwritebyte (d);
+  69   1      	OUTC |= CSHIGH;	//Turn cs high
+  70   1      }
+  71          
+  72          BYTE read_25LC320 (WORD a)
+  73          {
+  74   1      	BYTE d;
+  75   1      
+  76   1      	OUTC &= INLOW & CLKLOW;	//Make sure signals are low
+  77   1      	OUTC &= CSLOW;	//Turn cs low
+  78   1      	spiwritebyte (READ_CMD);
+  79   1      	spiwritebyte (a >> 8);
+  80   1      	spiwritebyte (a);
+  81   1      	d = spireadbyte();
+  82   1      	OUTC |= CSHIGH;	//Turn cs high
+  83   1      	return (d);
+  84   1      }
+  85          
+  86          void enable_25LC320 (void)
+  87          {
+  88   1      	OUTC &= INLOW & CLKLOW;	//Make sure signals are low
+  89   1      	OUTC &= CSLOW;	//Turn cs low
+  90   1      	spiwritebyte (WRITE_ENABLE);
+  91   1      	OUTC |= CSHIGH;	//Turn cs high
+  92   1      }
+  93          
+  94          BYTE status_25LC320 (void)
+  95          {
+  96   1      	BYTE d;
+  97   1      
+  98   1      	OUTC &= INLOW & CLKLOW;	//Make sure signals are low
+  99   1      	OUTC &= CSLOW;	//Turn cs low
+ 100   1      	spiwritebyte (READ_STATUS);
+ 101   1      	d = spireadbyte();
+ 102   1      	OUTC |= CSHIGH;	//Turn cs high
+ 103   1      	return (d);
+ 104   1      }
+ 105          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    213    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       9
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

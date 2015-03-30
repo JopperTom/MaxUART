@@ -1,0 +1,408 @@
+BL51 BANKED LINKER/LOCATER V4.01                                                        03/09/2005  17:50:21  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V4.01, INVOKED BY:
+H:\KEIL\C51\BIN\BL51.EXE spi.obj, spiread.obj, spiwrite.obj TO spi RAMSIZE (256) CODE (0X0000-0XFFFF) XDATA (0X0000-0XFF
+>> FF)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  spi.obj (SPI)
+  spiread.obj (SPIREAD)
+  spiwrite.obj (SPIWRITE)
+  H:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  spi (SPI)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0008H     UNIT         _DATA_GROUP_
+            IDATA   0010H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     004AH     UNIT         ?PR?MAIN?SPI
+            CODE    004DH     0031H     UNIT         ?PR?_WRITE_25LC320?SPI
+            CODE    007EH     002DH     UNIT         ?PR?_READ_25LC320?SPI
+            CODE    00ABH     002CH     UNIT         ?PR?SPIREADBYTE?MODULE
+            CODE    00D7H     001BH     UNIT         ?PR?STATUS_25LC320?SPI
+            CODE    00F2H     001AH     UNIT         ?PR?SPIWRITEBYTE?MODULE
+            CODE    010CH     0018H     UNIT         ?PR?ENABLE_25LC320?SPI
+            CODE    0124H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   spi (SPI)
+
+
+SEGMENT                           DATA_GROUP 
+  +--> CALLED SEGMENT           START    LENGTH
+-----------------------------------------------
+?C_C51STARTUP                   -----    -----
+  +--> ?PR?MAIN?SPI
+
+?PR?MAIN?SPI                    0008H    0004H
+  +--> ?PR?ENABLE_25LC320?SPI
+  +--> ?PR?_WRITE_25LC320?SPI
+  +--> ?PR?STATUS_25LC320?SPI
+  +--> ?PR?_READ_25LC320?SPI
+
+?PR?ENABLE_25LC320?SPI          -----    -----
+  +--> ?PR?SPIWRITEBYTE?MODULE
+
+?PR?SPIWRITEBYTE?MODULE         000FH    0001H
+BL51 BANKED LINKER/LOCATER V4.01                                                      03/09/2005  17:50:21  PAGE 2
+
+
+
+?PR?_WRITE_25LC320?SPI          000CH    0003H
+  +--> ?PR?SPIWRITEBYTE?MODULE
+
+?PR?STATUS_25LC320?SPI          -----    -----
+  +--> ?PR?SPIWRITEBYTE?MODULE
+  +--> ?PR?SPIREADBYTE?MODULE
+
+?PR?_READ_25LC320?SPI           000CH    0002H
+  +--> ?PR?SPIWRITEBYTE?MODULE
+  +--> ?PR?SPIREADBYTE?MODULE
+
+
+
+UNRESOLVED EXTERNAL SYMBOLS:
+   OEC
+   OUTC
+   PORTCCFG
+
+
+
+SYMBOL TABLE OF MODULE:  spi (SPI)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        SPI
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  B:00C0H.3       PUBLIC        TB81
+  B:00C0H.7       PUBLIC        SM01
+  B:00C0H.6       PUBLIC        SM11
+  B:00E8H.1       PUBLIC        EI2C
+  B:00D0H.6       PUBLIC        AC
+  B:00C0H.5       PUBLIC        SM21
+  B:00A8H.7       PUBLIC        EA
+  B:00F8H.1       PUBLIC        PI2C
+  B:00D0H.1       PUBLIC        FL
+  C:00D7H         PUBLIC        status_25LC320
+  B:00C8H.6       PUBLIC        EXF2
+  B:00C0H.4       PUBLIC        REN1
+  B:0098H.0       PUBLIC        RI
+  B:00D0H.7       PUBLIC        CY
+  B:0098H.1       PUBLIC        TI
+  B:00D8H.3       PUBLIC        INT6
+  B:00D0H.2       PUBLIC        OV
+  C:0003H         PUBLIC        main
+  B:00C8H.1       PUBLIC        C_T2
+  B:00C8H.5       PUBLIC        RCLK
+  B:00C8H.4       PUBLIC        TCLK
+  B:00E8H.0       PUBLIC        EUSB
+  B:00D8H.4       PUBLIC        RESI
+  B:00F8H.0       PUBLIC        PUSB
+  B:0088H.1       PUBLIC        IE0
+  B:0088H.3       PUBLIC        IE1
+  B:00C8H.0       PUBLIC        CP_RL2
+  B:00A8H.4       PUBLIC        ES0
+  B:00A8H.6       PUBLIC        ES1
+BL51 BANKED LINKER/LOCATER V4.01                                                      03/09/2005  17:50:21  PAGE 3
+
+
+  B:00A8H.1       PUBLIC        ET0
+  B:00A8H.3       PUBLIC        ET1
+  B:0088H.5       PUBLIC        TF0
+  B:00A8H.5       PUBLIC        ET2
+  B:0088H.7       PUBLIC        TF1
+  B:00C8H.7       PUBLIC        TF2
+  B:00C0H.0       PUBLIC        RI1
+  B:0098H.2       PUBLIC        RB8
+  B:00A8H.0       PUBLIC        EX0
+  B:0088H.0       PUBLIC        IT0
+  B:00C0H.1       PUBLIC        TI1
+  B:00A8H.2       PUBLIC        EX1
+  B:0098H.3       PUBLIC        TB8
+  B:0088H.2       PUBLIC        IT1
+  B:00D0H.0       PUBLIC        P
+  B:0098H.7       PUBLIC        SM0
+  B:0098H.6       PUBLIC        SM1
+  B:0098H.5       PUBLIC        SM2
+  B:00B8H.4       PUBLIC        PS0
+  B:00B8H.6       PUBLIC        PS1
+  B:00B8H.1       PUBLIC        PT0
+  B:00D0H.3       PUBLIC        RS0
+  B:00B8H.3       PUBLIC        PT1
+  B:00D0H.4       PUBLIC        RS1
+  B:00B8H.5       PUBLIC        PT2
+  B:0088H.4       PUBLIC        TR0
+  B:0088H.6       PUBLIC        TR1
+  C:010CH         PUBLIC        enable_25LC320
+  B:00C8H.2       PUBLIC        TR2
+  B:00B8H.0       PUBLIC        PX0
+  B:00B8H.2       PUBLIC        PX1
+  B:00E8H.2       PUBLIC        EIEX4
+  B:00E8H.3       PUBLIC        EIEX5
+  B:00E8H.4       PUBLIC        EIEX6
+  B:00C8H.3       PUBLIC        EXEN2
+  B:0080H.6       PUBLIC        SEL
+  B:00D8H.7       PUBLIC        SMOD1
+  B:0098H.4       PUBLIC        REN
+  C:007EH         PUBLIC        _read_25LC320
+  B:00F8H.2       PUBLIC        EIPX4
+  B:00F8H.3       PUBLIC        EIPX5
+  B:00F8H.4       PUBLIC        EIPX6
+  D:008EH         PUBLIC        CKCON
+  B:00D0H.5       PUBLIC        F0
+  B:00D8H.5       PUBLIC        ERESI
+  C:004DH         PUBLIC        _write_25LC320
+  B:00C0H.2       PUBLIC        RB81
+  -------         PROC          MAIN
+  -------         DO            MAIN
+  D:0008H         SYMBOL        d
+  D:0009H         SYMBOL        a
+  D:0007H         SYMBOL        t
+  D:000BH         SYMBOL        x
+  -------         ENDDO         x
+  C:0003H         LINE#         38
+  C:0003H         LINE#         39
+  C:0003H         LINE#         44
+BL51 BANKED LINKER/LOCATER V4.01                                                      03/09/2005  17:50:21  PAGE 4
+
+
+  C:000AH         LINE#         45
+  C:0011H         LINE#         46
+  C:0015H         LINE#         47
+  C:001CH         LINE#         48
+  C:001FH         LINE#         50
+  C:001FH         LINE#         51
+  C:001FH         LINE#         52
+  C:0022H         LINE#         53
+  C:002BH         LINE#         54
+  C:0032H         LINE#         55
+  C:0039H         LINE#         56
+  C:003EH         LINE#         57
+  C:0041H         LINE#         58
+  C:0049H         LINE#         59
+  C:004BH         LINE#         60
+  -------         ENDPROC       MAIN
+  -------         PROC          _WRITE_25LC320
+  D:000CH         SYMBOL        a
+  D:000EH         SYMBOL        d
+  C:004DH         LINE#         63
+  C:0053H         LINE#         64
+  C:0053H         LINE#         65
+  C:005AH         LINE#         66
+  C:005EH         LINE#         67
+  C:0063H         LINE#         68
+  C:006CH         LINE#         69
+  C:0071H         LINE#         70
+  C:0076H         LINE#         71
+  C:007DH         LINE#         72
+  -------         ENDPROC       _WRITE_25LC320
+  -------         PROC          _READ_25LC320
+  D:000CH         SYMBOL        a
+  -------         DO            a
+  D:0007H         SYMBOL        d
+  -------         ENDDO         d
+  C:007EH         LINE#         74
+  C:0082H         LINE#         75
+  C:0082H         LINE#         78
+  C:0089H         LINE#         79
+  C:008DH         LINE#         80
+  C:0092H         LINE#         81
+  C:009BH         LINE#         82
+  C:00A0H         LINE#         83
+  C:00A3H         LINE#         84
+  C:00AAH         LINE#         85
+  C:00AAH         LINE#         86
+  -------         ENDPROC       _READ_25LC320
+  -------         PROC          ENABLE_25LC320
+  C:010CH         LINE#         88
+  C:010CH         LINE#         89
+  C:010CH         LINE#         90
+  C:0113H         LINE#         91
+  C:0117H         LINE#         92
+  C:011CH         LINE#         93
+  C:0123H         LINE#         94
+  -------         ENDPROC       ENABLE_25LC320
+  -------         PROC          STATUS_25LC320
+BL51 BANKED LINKER/LOCATER V4.01                                                      03/09/2005  17:50:21  PAGE 5
+
+
+  -------         DO            STATUS_25LC320
+  D:0007H         SYMBOL        d
+  -------         ENDDO         d
+  C:00D7H         LINE#         96
+  C:00D7H         LINE#         97
+  C:00D7H         LINE#         100
+  C:00DEH         LINE#         101
+  C:00E2H         LINE#         102
+  C:00E7H         LINE#         103
+  C:00EAH         LINE#         104
+  C:00F1H         LINE#         105
+  C:00F1H         LINE#         106
+  -------         ENDPROC       STATUS_25LC320
+  -------         ENDMOD        SPI
+
+  -------         MODULE        SPIREAD
+  C:00ABH         SEGMENT       ?PR?SPIREADBYTE?MODULE
+  C:00ABH         PUBLIC        SPIREADBYTE
+  N:0008H         SYMBOL        BITMASK
+  N:0002H         SYMBOL        CLKHIGH
+  N:00FDH         SYMBOL        CLKLOW
+  D:0086H         SYMBOL        DPS
+  C:00CCH         SYMBOL        HIGHBIT
+  C:00C0H         SYMBOL        LOOP
+  X:7F98H         SYMBOL        OUTC
+  X:7F9BH         SYMBOL        PINSC
+  C:00CDH         SYMBOL        SKIP
+  C:00ABH         LINE#         24
+  C:00AEH         LINE#         25
+  C:00AFH         LINE#         26
+  C:00B0H         LINE#         27
+  C:00B2H         LINE#         28
+  C:00B3H         LINE#         29
+  C:00B4H         LINE#         30
+  C:00B6H         LINE#         31
+  C:00B7H         LINE#         32
+  C:00B9H         LINE#         33
+  C:00BCH         LINE#         34
+  C:00BEH         LINE#         35
+  C:00C0H         LINE#         38
+  C:00C1H         LINE#         39
+  C:00C2H         LINE#         40
+  C:00C4H         LINE#         41
+  C:00C5H         LINE#         42
+  C:00C7H         LINE#         43
+  C:00C9H         LINE#         44
+  C:00CAH         LINE#         45
+  C:00CCH         LINE#         48
+  C:00CDH         LINE#         51
+  C:00CFH         LINE#         52
+  C:00D0H         LINE#         53
+  C:00D1H         LINE#         54
+  C:00D2H         LINE#         55
+  C:00D3H         LINE#         56
+  C:00D4H         LINE#         57
+  C:00D6H         LINE#         58
+  -------         ENDMOD        SPIREAD
+BL51 BANKED LINKER/LOCATER V4.01                                                      03/09/2005  17:50:21  PAGE 6
+
+
+
+  -------         MODULE        SPIWRITE
+  C:00F2H         SEGMENT       ?PR?SPIWRITEBYTE?MODULE
+  D:000FH         SEGMENT       ?DT?SPIWRITEBYTE?MODULE
+  D:000FH         PUBLIC        ?_SPIWRITEBYTE?BYTE
+  C:00F2H         PUBLIC        _SPIWRITEBYTE
+  N:0004H         SYMBOL        BITHIGH
+  N:00FBH         SYMBOL        BITLOW
+  N:0002H         SYMBOL        CLKHIGH
+  N:00FDH         SYMBOL        CLKLOW
+  D:000FH         SYMBOL        D
+  C:0101H         SYMBOL        HIGHBIT
+  C:00F7H         SYMBOL        LOOP
+  X:7F98H         SYMBOL        OUTC
+  C:0103H         SYMBOL        SKIP
+  C:00F2H         LINE#         28
+  C:00F5H         LINE#         29
+  C:00F7H         LINE#         32
+  C:00F8H         LINE#         33
+  C:00F9H         LINE#         34
+  C:00FAH         LINE#         35
+  C:00FBH         LINE#         36
+  C:00FDH         LINE#         37
+  C:00FFH         LINE#         38
+  C:0101H         LINE#         41
+  C:0103H         LINE#         44
+  C:0105H         LINE#         45
+  C:0106H         LINE#         47
+  C:0108H         LINE#         48
+  C:0109H         LINE#         49
+  C:010BH         LINE#         50
+  -------         ENDMOD        SPIWRITE
+
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  OUTC
+    MODULE:  spi.obj (SPI)
+
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  OEC
+    MODULE:  spi.obj (SPI)
+
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  PORTCCFG
+    MODULE:  spi.obj (SPI)
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  PORTCCFG
+    MODULE:  spi.obj (SPI)
+    ADDRESS: 0004H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  OEC
+    MODULE:  spi.obj (SPI)
+    ADDRESS: 000BH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  OUTC
+BL51 BANKED LINKER/LOCATER V4.01                                                      03/09/2005  17:50:21  PAGE 7
+
+
+    MODULE:  spi.obj (SPI)
+    ADDRESS: 0016H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  OUTC
+    MODULE:  spi.obj (SPI)
+    ADDRESS: 0054H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  OUTC
+    MODULE:  spi.obj (SPI)
+    ADDRESS: 0077H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  OUTC
+    MODULE:  spi.obj (SPI)
+    ADDRESS: 0083H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  OUTC
+    MODULE:  spi.obj (SPI)
+    ADDRESS: 00A4H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  OUTC
+    MODULE:  spi.obj (SPI)
+    ADDRESS: 010DH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  OUTC
+    MODULE:  spi.obj (SPI)
+    ADDRESS: 011DH
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  OUTC
+    MODULE:  spi.obj (SPI)
+    ADDRESS: 00D8H
+
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  OUTC
+    MODULE:  spi.obj (SPI)
+    ADDRESS: 00EBH
+
+LINK/LOCATE RUN COMPLETE.  14 WARNING(S),  0 ERROR(S)

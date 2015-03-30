@@ -1,0 +1,15 @@
+#ifndef INTERFACE_H
+#define INTERFACE_H
+
+__no_init volatile __io unsigned char PO5 @ _M(1,1);   // Port 5 Output Register 
+
+//typedef unsigned char BYTE;
+//typedef unsigned short WORD;
+
+void testDELAY(int);
+unsigned char sendBYTE( unsigned char );
+unsigned char rreg( unsigned char );
+void wreg( unsigned char, unsigned char );
+void IFACE_Init( void );
+
+#endif

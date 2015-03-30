@@ -1,0 +1,34 @@
+[Interrupts]
+Enabled=1
+[MemoryMap]
+Enabled=0
+TypeVolition=1
+UnspecRange=1
+ActionState=1
+[DisAssemblyWindow]
+NumStates=_ 1
+State 1=_ 1
+[Watch]
+Watch 1=
+Watch 2=
+Watch 3=
+[Profiling]
+State=_ 0
+[TermIOSettings]
+Filename=_ ""
+InputMode=_ 1
+[Desktop-Debug]
+Wnd0=_ "Editor-DebugSource" "open" 44 0 1 -1 -1 -1 -1 100 59 1156 677 "H:\maxim-ic\Maxim UART\My Code\SPI_testX\SPI_test0 .c" 1 1 0 216 6927 6927 0 147 5132 5132
+Wnd1=_ "Disassembly" "open" 44 0 1 -1 -1 -1 -1 545 0 910 717
+Wnd2=_ "Terminal I/O" "open" 44 0 1 -1 -1 -1 -1 965 146 1262 764
+Maximized=_ 0
+Count=_ 3
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
+[Breakpoints]
+Count=0

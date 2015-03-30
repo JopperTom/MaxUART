@@ -1,0 +1,43 @@
+[DisAssemblyWindow]
+NumStates=_ 1
+State 1=_ 1
+[Watch]
+Watch 1=_ 8 "k" "rdat" "SUD" "pkt" "p" "EPData" "BUF" "wd"
+Watch 2=
+Watch 3=
+[Profiling]
+State=_ 0
+[TermIOSettings]
+Filename=_ ""
+InputMode=_ 1
+[QWatch]
+WindowContent=_ 100 100 100 100
+[CodeCoverage]
+State=_ 0
+[Interrupts]
+Enabled=1
+[MemoryMap]
+Enabled=0
+TypeVolition=1
+UnspecRange=1
+ActionState=1
+[Desktop-Debug]
+Wnd0=_ "Disassembly" "open" 44 0 1 -1 -1 -1 -1 108 20 521 824
+Wnd1=_ "Editor-DebugSource" "closed" 44 0 1 -1 -1 -1 -1 550 122 1376 872
+Wnd2=_ "Log" "closed" 44 0 1 -1 -1 -1 -1 746 764 1401 977
+Wnd3=_ "Register" "closed" 44 0 1 -1 -1 -1 -1 20 94 387 793 12 0 0 1 "T2CNB1"
+Wnd4=_ "CallStack" "closed" 44 0 1 -1 -1 -1 -1 0 688 224 1017 1
+Wnd5=_ "Locals" "closed" 44 0 1 -1 -1 -1 -1 1032 0 1444 269 100 100 100 100
+Wnd6=_ "Terminal I/O" "closed" 44 0 1 -1 -1 -1 -1 1030 508 1444 804
+Wnd7=_ "Watch" "closed" 44 0 1 -1 -1 -1 -1 1032 269 1444 510 100 100 100 100 100 100 100 100 100 100 100 100
+Maximized=_ 0
+Count=_ 8
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
+[Breakpoints]
+Count=0

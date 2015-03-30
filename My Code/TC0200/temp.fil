@@ -1,0 +1,10 @@
+Decoding Asynchronous serial bus transactions from the beginning of the waveform screen.
+Please wait...
+'U' = 0x55
+'S' = 0x53
+'B' = 0x42
+'e' = 0x65
+'e' = 0x65
+' ' = 0x20
+'Z' = 0x5A
+'X' = 0x58

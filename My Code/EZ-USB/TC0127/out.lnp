@@ -1,0 +1,6 @@
+"TC0127.obj",
+"H:\Cypress\USB\Target\Lib\Ezusb\Ezusb.lib" 
+TO "out" 
+RAMSIZE(256) 
+CODE( 0x4000 )
+XDATA( 0x5000 )

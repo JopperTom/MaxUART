@@ -1,0 +1,104 @@
+//  The connection for the SPI interface to the following pins:
+//
+//	Q2000 SPI signal  Port	J2-pin ---->  RT99 
+//	INT#	          P60	54     ---->  IRQB  P187 
+//	MISO		  P57	56     ---->  DOUT  P175
+//	SCK		  P56	58     ---->  SCLK  P182
+//	MOSI		  P55	60     ---->  DIN   P178
+//	SS#		  P54   62     ---->  CSB   P180
+
+
+#ifndef INTERFACE_C
+#define INTERFACE_C
+
+
+#define IFACE_SPI
+//#define IFACE_I2C
+
+#include <intrinsics.h>             // MAXQ2000 specific stuff
+#include <iomaxq200x.h>             // ditto
+#include "interface.h"
+#include "RT99reg.h"
+
+void testDELAY(int x){int y; for( y=0; y<x ; y++);}
+
+
+#ifdef IFACE_SPI
+
+// SPI Send Byte Function
+// Purpose: Send one BYTE of data to the RT99 via the SPI interface and wait for xfer to complete.
+// Precondition: The Q2000 must be interface with the RT99 via the SPI pins and the 
+// reg variable contains any BYTE data to be written to the RT99.
+// Postcondition: The argument value is written to the SPI port and the proper amount of delay is
+// allowed for the transfer. Invalid returned data is discarded.
+//void SENDBYTE(int x){ SPIB = x; while(SPICN_bit.STBY); SPIB; }
+BYTE sendBYTE( unsigned char x )
+{
+  SPIB = x;                  // Load the data to send
+  while(SPICN_bit.STBY);        // Loop until the data has been sent.
+  SPIB;
+  SPICN_bit.SPIC = 0;           // Clear the SPI tansfer complete flag.
+  return SPIB;
+}
+
+// SPI Read Register Function
+// Purpose: Takes a BYTE value as an argument that represents a RT99 register address
+// and allows proper delay for the data to be returned from the RT99 in that register address. 
+// Precondition: The Q2000 must be interface with the RT99 via the SPI pins and the 
+// reg variable must contain a hex value of a valid RT99 register address.
+// Postcondition: SPIB contains the data returned from the RT99.
+BYTE rreg(BYTE reg)
+{
+  // One WORD (MSB = Command, LSB = Data) is sent to the RT99 to request register value.
+  CS_LO
+  sendBYTE( 0x00 | reg ); // bit7 0=read, bit6-bit0 register address value.
+  sendBYTE(0x00); // Fill data, discarded by RT99.
+  CS_HI
+
+  // One WORD of fill data which allows RT99 to return register value.
+  CS_LO
+  sendBYTE(0x00); // Fill data, discarded by RT99.
+  sendBYTE(0x00);// Fill data, discarded by RT99.
+  CS_HI
+  return SPIB;
+}
+
+// SPI Write Register Function
+// Purpose: Takes a BYTE value as an argument that represents a RT99 register address
+// and one BYTE of data and writes a BYTE value to the RT99 register address. 
+// Precondition: The Q2000 must be interface with the RT99 via the SPI pins and the 
+// reg variable must contain a hex value of a valid RT99 register address.
+// Postcondition: The RT99 register has been written with the data BYTE.
+void wreg(BYTE reg, BYTE dat)
+{
+  CS_LO
+// Command BYTE specifying which RT99 register to write to.
+  sendBYTE( 0x80 | reg );
+// Data byte to write to register address.
+  sendBYTE( dat );
+  CS_HI
+}
+
+
+void IFACE_Init(void)
+{
+  CKCN = 0x00;              // system clock divisor is 1
+  PD5 |= 0x70;             // Set SPI output pins (CS, SCLK, DOUT) as output.
+  PD5 &= ~0x80;            // Set SPI input pin (DIN) as input.
+  SPICK = 0x00;             // fastest SPI clock--div by 2 
+  SPICF = 0x00;             // mode(0,0), 8 bit data
+  SPICN_bit.MSTM = 1;       // Set Q2000 as the master.
+  SPICN_bit.SPIEN = 1;      // Enable SPI
+  CS_HI
+}
+#endif // IFACE_SPI
+
+#else
+#ifdef IFACE_I2C
+
+  // PLACE I2C FUNCTIONS HERE
+
+#endif // IFACE_I2C
+
+
+#endif // INTERFACE_C

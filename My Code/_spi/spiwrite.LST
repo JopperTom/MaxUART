@@ -1,0 +1,101 @@
+A51 MACRO ASSEMBLER  SPIWRITE                                                             03/09/2005 20:23:39 PAGE     1
+
+
+MACRO ASSEMBLER A51 V6.01
+OBJECT MODULE PLACED IN .\spiwrite.OBJ
+ASSEMBLER INVOKED BY: H:\Keil\C51\BIN\A51.EXE .\spiwrite.a51 SET(SMALL) DEBUG EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     NAME            spiwritebyte
+                       2     ;
+                       3     ;       spiwrite.a51    4-19-00 ott
+                       4     ;       This routine takes a byte variable and
+                       5     ;       shifts it out with the clock
+                       6     ;       worst case bit rate of 250kHz
+                       7     ;       byte rate of 35 kHz
+                       8     ;
+                       9     
+                      10     ?PR?SPIWRITEBYTE?MODULE segment code
+                      11     ?DT?SPIWRITEBYTE?MODULE segment data overlayable
+                      12     
+                      13     PUBLIC          _spiwritebyte, ?_spiwritebyte?BYTE
+                      14     
+----                  15     rseg    ?DT?SPIWRITEBYTE?MODULE
+0000                  16     ?_spiwritebyte?BYTE:
+0000                  17     d: ds 1
+                      18     
+----                  19     rseg    ?PR?SPIWRITEBYTE?MODULE
+                      20     
+  0002                21     CLKHIGH equ 00000010B   ;Bitmask to turn clk pin high
+  00FD                22     CLKLOW  equ 11111101B   ;Bitmask to turn clk pin low
+  0004                23     BITHIGH equ 00000100B   ;Bitmask to turn out pin high
+  00FB                24     BITLOW  equ 11111011B   ;Bitmask to turn out pin low
+                      25     
+  7F98                26     OUTC            XDATA        7F98H
+                      27     
+0000                  28     _spiwritebyte:
+                      29     
+0000 907F98           30             mov DPTR,#OUTC  ;point to outc
+0003 7E08             31             mov R6, #8      ;set up loop
+0005                  32     loop:   
+0005 EF               33             mov A, R7       ;move data to send to A
+0006 33               34             rlc A           ;rotate left through carry
+0007 FF               35             mov R7, A       ;save rotated
+0008 E0               36             movx A, @DPTR   ;setup to change bit
+0009 4004             37             jc highbit      ;if bit is high jump
+000B 54FB             38             anl A, #BITLOW  ;else set bit low
+000D 8002             39             sjmp skip       ;skip setting bit high
+000F                  40     highbit:
+000F 4404             41             orl A, #BITHIGH ;set out high and clock
+0011                  42     skip:   
+0011 4402             43             orl A, #CLKHIGH ;set clock bit high
+0013 F0               44             movx @DPTR, A   ;output data
+                      45     ;       nop             ;may need this to stretch clock high time
+0014 00               46             nop             ;may need this to stretch clock high time
+0015 00               47             nop             ;may need this to stretch clock high time
+0016 00               48             nop             ;may need this to stretch clock high time
+0017 00               49             nop             ;may need this to stretch clock high time
+0018 00               50             nop             ;may need this to stretch clock high time
+0019 00               51             nop             ;may need this to stretch clock high time
+001A 00               52             nop             ;may need this to stretch clock high time
+001B 00               53             nop             ;may need this to stretch clock high time
+001C 00               54             nop             ;may need this to stretch clock high time
+001D 00               55             nop             ;may need this to stretch clock high time
+001E 00               56             nop             ;may need this to stretch clock high time
+001F 54FD             57             anl A, #CLKLOW  ;set clock low
+0021 F0               58             movx @DPTR, A   ;output low clock
+A51 MACRO ASSEMBLER  SPIWRITE                                                             03/09/2005 20:23:39 PAGE     2
+
+0022 DEE1             59             djnz R6, loop   ;repeat eight times
+0024 22               60             ret
+                      61             end
+                             
+A51 MACRO ASSEMBLER  SPIWRITE                                                             03/09/2005 20:23:39 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                  T Y P E  V A L U E   ATTRIBUTES
+
+?DT?SPIWRITEBYTE?MODULE  D SEG    0001H       REL=UNIT
+?PR?SPIWRITEBYTE?MODULE  C SEG    0025H       REL=UNIT
+?_SPIWRITEBYTE?BYTE . .  D ADDR   0000H   R   SEG=?DT?SPIWRITEBYTE?MODULE
+BITHIGH . . . . . . . .  N NUMB   0004H   A   
+BITLOW. . . . . . . . .  N NUMB   00FBH   A   
+CLKHIGH . . . . . . . .  N NUMB   0002H   A   
+CLKLOW. . . . . . . . .  N NUMB   00FDH   A   
+D . . . . . . . . . . .  D ADDR   0000H   R   SEG=?DT?SPIWRITEBYTE?MODULE
+HIGHBIT . . . . . . . .  C ADDR   000FH   R   SEG=?PR?SPIWRITEBYTE?MODULE
+LOOP. . . . . . . . . .  C ADDR   0005H   R   SEG=?PR?SPIWRITEBYTE?MODULE
+OUTC. . . . . . . . . .  X ADDR   7F98H   A   
+SKIP. . . . . . . . . .  C ADDR   0011H   R   SEG=?PR?SPIWRITEBYTE?MODULE
+SPIWRITEBYTE. . . . . .  N NUMB   -----       
+_SPIWRITEBYTE . . . . .  C ADDR   0000H   R   SEG=?PR?SPIWRITEBYTE?MODULE
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

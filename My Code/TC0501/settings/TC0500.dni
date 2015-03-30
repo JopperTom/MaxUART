@@ -1,0 +1,20 @@
+[DisAssemblyWindow]
+NumStates=_ 0
+[Watch]
+Watch 1=_ 1 "rx"
+Watch 2=
+Watch 3=
+[Profiling]
+State=_ 0
+[TermIOSettings]
+Filename=_ ""
+InputMode=_ 1
+[Breakpoints]
+Count=0
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""

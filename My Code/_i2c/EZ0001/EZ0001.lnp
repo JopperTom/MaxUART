@@ -1,0 +1,5 @@
+"zapbig.obj" 
+TO "zapbig" 
+RAMSIZE(256) 
+CODE( 0X0080-0X107F )
+XDATA( 0X1100-0X11FF )

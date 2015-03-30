@@ -1,0 +1,79 @@
+C51 COMPILER V6.10  ZAPBIG                                                                 08/22/2001 17:22:56 PAGE 1   
+
+
+C51 COMPILER V6.10, COMPILATION OF MODULE ZAPBIG
+OBJECT MODULE PLACED IN .\zapbig.OBJ
+COMPILER INVOKED BY: C:\KEIL\C51\BIN\C51.EXE .\zapbig.c DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          /* zapbig.c  8-22-00   LTH
+   2          Write the hex bytes [B0 47 05 80 00 01 00] to an EEPROM at address 1.
+   3          This is handy for over-writing an EEPROM that was previously loaded with 'B2'
+   4          code for boot-load testing. By writing the seven bytes above we create an EEPROM
+   5          that acts like the 24LC00 supplied on the stock development board. 
+   6          NOTE NOTE NOTE Keep dipswitch 8 in the 'up' (on) position for both types of operation--
+   7          B0 debug and B2 load. 
+   8          */
+   9          xdata char I2CS	  		_at_ 0x7FA5;	// I2C port Control/Status
+  10          xdata char I2DAT  		_at_ 0x7fA6;    // I2C data
+  11          #define bSTOPBIT	0x40				// I2CS.6 is i2c STOP bit
+  12          void display_hex (char val);			// display 'val' as hex in 7-seg readout
+  13          
+  14          main()
+  15          {
+  16   1      	display_hex(0xFE);	// Light up the top segment to show we're running
+  17   1      //
+  18   1      	while (I2CS & bSTOPBIT);	// wait for STOP bit LOW--last operation complete
+  19   1      	I2CS = 0x80;				// set the START bit
+  20   1      	I2DAT = 0xA2;				// EEPROM address 1, b0=0 means 'write'
+  21   1      	while ((I2CS&0x01)!=0x01);	// wait for DONE=1 (i2c transmit complete)
+  22   1      	I2DAT = 0;					// send Addr-H
+  23   1      	while ((I2CS&0x01)!=0x01);	// wait for DONE=1
+  24   1      	I2DAT = 0;					// send Addr-L
+  25   1      	while ((I2CS&0x01)!=0x01);	// wait for DONE=1
+  26   1      	I2DAT = 0xB0;				// byte 1
+  27   1      	while ((I2CS&0x01)!=0x01);	// wait for DONE=1
+  28   1      	I2DAT = 0x47;				// byte 2
+  29   1      	while ((I2CS&0x01)!=0x01);	// wait for DONE=1
+  30   1      	I2DAT = 0x05;				// byte 3
+  31   1      	while ((I2CS&0x01)!=0x01);	// wait for DONE=1
+  32   1      	I2DAT = 0x80;				// byte 4
+  33   1      	while ((I2CS&0x01)!=0x01);	// wait for DONE=1
+  34   1      	I2DAT = 0x00;				// byte 5
+  35   1      	while ((I2CS&0x01)!=0x01);	// wait for DONE=1
+  36   1      	I2DAT = 0x01;				// byte 6
+  37   1      	while ((I2CS&0x01)!=0x01);	// wait for DONE=1
+  38   1      	I2DAT = 0x00;				// byte 7
+  39   1      	while ((I2CS&0x01)!=0x01);	// wait for DONE=1
+  40   1      	I2CS = 0x40;				// set the STOP bit
+  41   1      	display_hex(0xF7);			// Light up bottom segment
+  42   1      }
+  43          	
+  44          void display_hex (char val)	
+  45          {
+  46   1      	while (I2CS & bSTOPBIT);	// wait for STOP bit LOW--last operation complete
+  47   1      	I2CS = 0x80;				// set the START bit
+  48   1      	I2DAT = 0x42;				// IO expander address=42, LSB=0 for write
+  49   1      	while ((I2CS&0x01)!=0x01);	// wait for DONE=1 (i2c transmit complete)
+  50   1      	I2DAT = val;				// send the data byte
+  51   1      	while ((I2CS&0x01)!=0x01);	// wait for DONE=1
+  52   1      	I2CS = 0x40;				// set the STOP bit
+  53   1      }
+  54          
+
+C51 COMPILER V6.10  ZAPBIG                                                                 08/22/2001 17:22:56 PAGE 2   
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    196    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

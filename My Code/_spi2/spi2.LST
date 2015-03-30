@@ -1,0 +1,348 @@
+C51 COMPILER V6.01 SPI2                                                                    03/14/2005 17:51:46 PAGE 1   
+
+
+C51 COMPILER 6.01, COMPILATION OF MODULE SPI2
+OBJECT MODULE PLACED IN .\spi2.OBJ
+COMPILER INVOKED BY: H:\Keil\C51\BIN\C51.EXE .\spi2.c DEBUG OBJECTEXTEND SYMBOLS
+
+stmt level    source
+
+   1          /*****************************************************************************
+   2          
+   3          	spi2.c		4-24-00		ott
+   4          	Used to test uart mode 0 spi functionality on EZ-USB
+   5          	This program will do a constant write and readback loop to an
+   6          	25C320 spi EEPROM with EZ-USB as the master
+   7          	Pins used:	
+   8          			C0 -	RxD0 (Data In)	MISO
+   9          			C1 - TxD0 (Clk)			SCLK
+  10          			C2 - Chip select		CSB
+  11          			A6 - RxD0OUT (Data Out)	MOSI
+  12          
+  13          *****************************************************************************/
+  14          //#include "spi2.h"
+  15          #include <stdio.h>
+  16          #include <stdlib.h>
+  17          #include <ezusb.h>
+  18          #include <ezregs.h>
+  19          #include "RT99reg.h"
+  20          
+  21          #define CSHIGH 0x04
+  22          #define CSLOW 0xFB
+  23          #define READ_CMD 0x00
+  24          #define WRITE_CMD 0x80
+  25          #define WRITE_ENABLE 6
+  26          #define WRITE_DISABLE 4
+  27          #define READ_STATUS 5
+  28          #define WRITE_STATUS 1
+  29          
+  30          /////////////////////////////////////// Look up table
+  31          code BYTE swap[] = {0,128,64,192,32,160,96,224,16,144,80,208,48,176,112,240,8,136,
+  32          72,200,40,168,104,232,24,152,88,216,56,184,120,248,4,132,68,196,36,164,100,
+  33          228,20,148,84,212,52,180,116,244,12,140,76,204,44,172,108,236,28,156,92,220,
+  34          60,188,124,252,2,130,66,194,34,162,98,226,18,146,82,210,50,178,114,242,10,
+  35          138,74,202,42,170,106,234,26,154,90,218,58,186,122,250,6,134,70,198,38,166,
+  36          102,230,22,150,86,214,54,182,118,246,14,142,78,206,46,174,110,238,30,158,94,
+  37          222,62,190,126,254,1,129,65,193,33,161,97,225,17,145,81,209,49,177,113,241,9,
+  38          137,73,201,41,169,105,233,25,153,89,217,57,185,121,249,5,133,69,197,37,165,
+  39          101,229,21,149,85,213,53,181,117,245,13,141,77,205,45,173,109,237,29,157,93,
+  40          221,61,189,125,253,3,131,67,195,35,163,99,227,19,147,83,211,51,179,115,243,11,
+  41          139,75,203,43,171,107,235,27,155,91,219,59,187,123,251,7,135,71,199,39,167,
+  42          103,231,23,151,87,215,55,183,119,247,15,143,79,207,47,175,111,239,31,159,95,
+  43          223,63,191,127,255};
+  44          	BYTE t[8];//,x;
+  45          
+  46          /////////////////////////////////////// Prototypes
+  47          void wreg (BYTE a, BYTE d);
+  48          BYTE rreg (BYTE a);
+  49          void enable (void);
+  50          BYTE status (void);
+  51          void spiwritebyte (BYTE d);
+  52          BYTE spireadbyte (void);
+  53          
+  54          main()
+  55          {
+C51 COMPILER V6.01 SPI2                                                                    03/14/2005 17:51:46 PAGE 2   
+
+  56   1      const BYTE dat = 0x55;
+  57   1      //	WORD a;
+  58   1      
+  59   1      	PORTCCFG = 0x03;				//Turn on uart pins rxd0, txd0
+  60   1      	PORTACFG = 0x40;				//Turn on uart pin rxd0out
+  61   1      	OEC = 0x04;						//Make CS# output
+  62   1      	SCON0 = 0x13;					//Mode 0, baud 24/12, enable receive
+  63   1      	CKCON &= 0xF8;					//Set stretch 0
+  64   1      	OUTC |= CSHIGH;					//Turn cs high
+  65   1      //	while(TRUE)
+  66   1      //	{
+  67   1      //wreg(RCR, dat);
+  68   1      //		enable();					//Enable write
+  69   1      //wreg(EFR, EFR_SPI_MODE);
+  70   1      		rreg(0x0D);
+  71   1      		rreg(0x0D);
+  72   1      		rreg(0x0D);
+  73   1      		rreg(0x0D);
+  74   1      		rreg(0x0D);
+  75   1      		rreg(0x0D);
+  76   1      		rreg(0x0D);
+  77   1      		rreg(RCR);
+  78   1      		rreg(RCR);
+  79   1      		rreg(RCR);
+  80   1      		rreg(RCR);
+  81   1      		rreg(RCR);
+  82   1      		rreg(RCR);
+  83   1      		rreg(RCR);
+  84   1      		rreg(RCR);
+  85   1      		rreg(RCR);
+  86   1      while(1);
+  87   1      
+  88   1      //		while (status() & 1);		//Wait until done
+  89   1      //		t = rreg(RCR);				//Try to read back
+  90   1      //		if (t != d)
+  91   1      //			x=0;					//Test for read back, set breakpoint here
+  92   1      //		a++;
+  93   1      //		d++;
+  94   1      //	}
+  95   1      }
+  96          
+  97          void wreg (BYTE reg, BYTE dat)
+  98          {
+  99   1      	OUTC &= CSLOW;						//Turn cs low
+ 100   1      	spiwritebyte (WRITE_CMD |  reg);	
+ 101   1      	spiwritebyte (dat);
+ 102   1      	OUTC |= CSHIGH;						//Turn cs high
+ 103   1      }
+ 104          
+ 105          BYTE rreg (BYTE reg)
+ 106          {
+ 107   1      	BYTE d;
+ 108   1      
+ 109   1      	OUTC &= CSLOW;						//Turn cs low
+ 110   1      	spiwritebyte (READ_CMD |  reg);
+ 111   1      	spiwritebyte (0x00);
+ 112   1      	OUTC |= CSHIGH;						//Turn cs high
+ 113   1      	OUTC &= CSLOW;						//Turn cs low
+ 114   1      	spiwritebyte (0x0D);
+ 115   1      	d = spireadbyte();
+ 116   1      	OUTC |= CSHIGH;						//Turn cs high
+ 117   1      	return (d);
+C51 COMPILER V6.01 SPI2                                                                    03/14/2005 17:51:46 PAGE 3   
+
+ 118   1      }
+ 119          
+ 120          void spiwritebyte (BYTE d)
+ 121          {
+ 122   1      	TI = FALSE;							//Clear flag
+ 123   1      	SBUF0 = swap[d];					//Write byte
+ 124   1      	while (!TI);						//Wait until done transmitting
+ 125   1      }
+ 126          
+ 127          BYTE spireadbyte (void)
+ 128          {
+ 129   1      	RI = FALSE;							//Clear flag
+ 130   1      	while (!RI);						//Wait until done receiving
+ 131   1      	return (swap[SBUF0]);				//Return byte
+ 132   1      }
+C51 COMPILER V6.01 SPI2                                                                    03/14/2005 17:51:46 PAGE 4   
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+TB81 . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C3H  1
+SM01 . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C7H  1
+DWORD. . . . . . . . . . . . . . . . .  TYPEDEF  -----  U_LONG   -----  4
+SM11 . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C6H  1
+EI2C . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00E9H  1
+AC . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D6H  1
+SM21 . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C5H  1
+EA . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00AFH  1
+STRINGDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  2
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+PI2C . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00F9H  1
+_rreg. . . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  reg. . . . . . . . . . . . . . . . .  * REG *  DATA   U_CHAR   0007H  1
+  d. . . . . . . . . . . . . . . . . .  * REG *  DATA   U_CHAR   0007H  1
+FL . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D1H  1
+size_t . . . . . . . . . . . . . . . .  TYPEDEF  -----  U_INT    -----  2
+_spiwritebyte. . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  d. . . . . . . . . . . . . . . . . .  * REG *  DATA   U_CHAR   0007H  1
+IN0BUF_ID. . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+IN1BUF_ID. . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+IN2BUF_ID. . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+EXF2 . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00CEH  1
+_wreg. . . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  reg. . . . . . . . . . . . . . . . .  * REG *  DATA   U_CHAR   0007H  1
+  dat. . . . . . . . . . . . . . . . .  AUTO     DATA   U_CHAR   0000H  1
+IN3BUF_ID. . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+REN1 . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C4H  1
+IN4BUF_ID. . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+IN5BUF_ID. . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+IN6BUF_ID. . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+IN7BUF_ID. . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+RI . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0098H  1
+CY . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D7H  1
+TI . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0099H  1
+INT6 . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00DBH  1
+spireadbyte. . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+OV . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D2H  1
+main . . . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  dat. . . . . . . . . . . . . . . . .  AUTO     DATA   U_CHAR   0000H  1
+C_T2 . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C9H  1
+RCLK . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00CDH  1
+DSCR . . . . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  2
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+BOOL . . . . . . . . . . . . . . . . .  TYPEDEF  DATA   BIT      -----  1
+TCLK . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00CCH  1
+EUSB . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00E8H  1
+RESI . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00DCH  1
+BYTE . . . . . . . . . . . . . . . . .  TYPEDEF  -----  U_CHAR   -----  1
+PUSB . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00F8H  1
+OUTC . . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+swap . . . . . . . . . . . . . . . . .  PUBLIC   CODE   ARRAY    0000H  256
+WORD . . . . . . . . . . . . . . . . .  TYPEDEF  -----  U_INT    -----  2
+IE0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0089H  1
+IE1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008BH  1
+CP_RL2 . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C8H  1
+C51 COMPILER V6.01 SPI2                                                                    03/14/2005 17:51:46 PAGE 5   
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+ES0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00ACH  1
+ES1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00AEH  1
+ET0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A9H  1
+ET1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00ABH  1
+TF0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008DH  1
+ET2. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00ADH  1
+TF1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008FH  1
+TF2. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00CFH  1
+RI1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C0H  1
+RB8. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      009AH  1
+EX0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A8H  1
+IT0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0088H  1
+TI1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C1H  1
+EX1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00AAH  1
+TB8. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      009BH  1
+IT1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008AH  1
+P. . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D0H  1
+SM0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      009FH  1
+SM1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      009EH  1
+SM2. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      009DH  1
+PS0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00BCH  1
+PS1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00BEH  1
+PT0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00B9H  1
+RS0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D3H  1
+PT1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00BBH  1
+RS1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D4H  1
+PT2. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00BDH  1
+TR0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008CH  1
+TR1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008EH  1
+OEC. . . . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+TR2. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00CAH  1
+PX0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00B8H  1
+PX1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00BAH  1
+PORTACFG . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+PORTCCFG . . . . . . . . . . . . . . .  EXTERN   XDATA  U_CHAR   -----  1
+EIEX4. . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00EAH  1
+DEVICEDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  18
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+  spec_ver_minor . . . . . . . . . . .  MEMBER   -----  U_CHAR   0002H  1
+  spec_ver_major . . . . . . . . . . .  MEMBER   -----  U_CHAR   0003H  1
+  dev_class. . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0004H  1
+  sub_class. . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0005H  1
+  protocol . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0006H  1
+  max_packet . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0007H  1
+  vendor_id. . . . . . . . . . . . . .  MEMBER   -----  U_INT    0008H  2
+  product_id . . . . . . . . . . . . .  MEMBER   -----  U_INT    000AH  2
+  version_id . . . . . . . . . . . . .  MEMBER   -----  U_INT    000CH  2
+  mfg_str. . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   000EH  1
+  prod_str . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   000FH  1
+  serialnum_str. . . . . . . . . . . .  MEMBER   -----  U_CHAR   0010H  1
+  configs. . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0011H  1
+EIEX5. . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00EBH  1
+SBUF0. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0099H  1
+EIEX6. . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00ECH  1
+EXEN2. . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00CBH  1
+SCON0. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0098H  1
+C51 COMPILER V6.01 SPI2                                                                    03/14/2005 17:51:46 PAGE 6   
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+SEL. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0086H  1
+SMOD1. . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00DFH  1
+REN. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      009CH  1
+CONFIGDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  9
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+  config_len . . . . . . . . . . . . .  MEMBER   -----  U_INT    0002H  2
+  interfaces . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0004H  1
+  index. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0005H  1
+  config_str . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0006H  1
+  attrib . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0007H  1
+  power. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0008H  1
+EIPX4. . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00FAH  1
+EIPX5. . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00FBH  1
+wchar_t. . . . . . . . . . . . . . . .  TYPEDEF  -----  CHAR     -----  1
+EIPX6. . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00FCH  1
+CKCON. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   008EH  1
+EPIOC. . . . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  2
+  cntrl. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  bytes. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+I2CPCKT. . . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  6
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  dat. . . . . . . . . . . . . . . . .  MEMBER   -----  PTR      0001H  3
+  count. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0004H  1
+  status . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0005H  1
+t. . . . . . . . . . . . . . . . . . .  PUBLIC   DATA   ARRAY    0000H  8
+OUT0BUF_ID . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+F0 . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00D5H  1
+OUT1BUF_ID . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+INTRFCDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  9
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+  index. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0002H  1
+  alt_setting. . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0003H  1
+  ep_cnt . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0004H  1
+  class. . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0005H  1
+  sub_class. . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0006H  1
+  protocol . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0007H  1
+  interface_str. . . . . . . . . . . .  MEMBER   -----  U_CHAR   0008H  1
+OUT2BUF_ID . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+OUT3BUF_ID . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+OUT4BUF_ID . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+ERESI. . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00DDH  1
+ENDPNTDSCR . . . . . . . . . . . . . .  TYPEDEF  -----  STRUCT   -----  7
+  length . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0000H  1
+  type . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0001H  1
+  addr . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0002H  1
+  ep_type. . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0003H  1
+  mp_L . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0004H  1
+  mp_H . . . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0005H  1
+  interval . . . . . . . . . . . . . .  MEMBER   -----  U_CHAR   0006H  1
+OUT5BUF_ID . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+OUT6BUF_ID . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+OUT7BUF_ID . . . . . . . . . . . . . .  E_CONST  -----  U_CHAR   -----  1
+RB81 . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00C2H  1
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+C51 COMPILER V6.01 SPI2                                                                    03/14/2005 17:51:46 PAGE 7   
+
+   CODE SIZE        =    214    ----
+   CONSTANT SIZE    =    256    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      8       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

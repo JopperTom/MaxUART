@@ -1,0 +1,146 @@
+C51 COMPILER V6.01 EZ0001                                                                  03/16/2005 19:31:53 PAGE 1   
+
+
+C51 COMPILER 6.01, COMPILATION OF MODULE EZ0001
+OBJECT MODULE PLACED IN .\EZ0001.OBJ
+COMPILER INVOKED BY: H:\Keil\C51\BIN\C51.EXE .\EZ0001.c OPTIMIZE(6,SPEED) DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          //
+   2          //  File........: TC0001.c
+   3          //  Authors.....: Bob Kelly/Tom Tripp
+   4          //  Description.: This is a test case that uses the SPI interface to print out the value of the RT99 RCR r
+             -egister.
+   5          //  
+   6          //  Conditions:
+   7          //    IFACE:  SPI
+   8          //    BAUD:   N/A bps
+   9          //    WORD:   N/A
+  10          //    FIFO:   No
+  11          //    INTS:   No
+  12          //  Date........: December 10, 2004
+  13          //
+  14          // The proper interface can be found in interface.c
+  15          
+  16          #ifndef TC0001_C
+  17          #define TC0001_C
+  18          
+  19          // Interrupt or not? - define only one.
+  20          //#define INT_DRIVEN
+  21          //#define POLLED
+  22          
+  23          
+  24          // Which interface? - define only one.
+  25          //#define IFACE_SPI	0
+  26          #define IFACE_I2C	1
+  27          
+  28          //#include <stdio.h>
+  29          //#include <stdlib.h>
+  30          #include <ezusb.h>
+  31          #include <ezregs.h>
+  32          #include "RT99reg.h"      // RT99 Registers and bits
+  33          #include "interface.c"    // SPI/I2C Implementation
+  34          #include "port.c"         // RS232/16550 Implementation
+*** WARNING C182 IN LINE 153 OF \KEIL\C51\INC\INTERFACE.C: pointer to different objects
+*** WARNING C280 IN LINE 21 OF H:\KEIL\C51\INC\PORT.C: 'int_number': unreferenced local variable
+  35          
+  36          
+  37          BYTE xdata reg_addr = 0x07;
+  38          
+  39          main()
+  40          {
+  41   1      ///// Declare Variables Here ///////////////////////
+  42   1      //unsigned char x[8];
+  43   1      int i;
+  44   1      ////////////////////////////////////////////////////
+  45   1      /*    PORT *port;
+  46   1          port = port_open( COM1_UART, COM1_INTERRUPT );
+  47   1          // Check to see if 
+  48   1          if ( port == NULL ) 
+  49   1          {
+  50   1              printf( "Failed to open the port!\n" );
+  51   1              exit( 1 );
+  52   1          }
+C51 COMPILER V6.01 EZ0001                                                                  03/16/2005 19:31:53 PAGE 2   
+
+  53   1          port_set( port, 38400L, 'N', 8, 1, NO_FIFO );
+  54   1      *//// Your Code Here //////////////////////////////
+  55   1      
+  56   1      //  POR();
+  57   1        IFACE_Init();
+  58   1      
+  59   1      //for(i=0;i<=7;i++)
+  60   1      //{
+  61   1      wreg(reg_addr, 0x14);
+  62   1      rreg(reg_addr);
+  63   1      // x[i] = rreg(RCR);
+  64   1      //  printf("RCR: 0x%X\n", x );
+  65   1      //testDELAY(140);
+  66   1      //}
+  67   1      /*
+  68   1      for(i=0;i<=7;i++)
+  69   1      {
+  70   1      // x = rreg(RCR);
+  71   1      //  printf("RCR: %X\n", x[i] );
+  72   1      putchar(x[i]);
+  73   1      putchar('\n');
+  74   1      }
+  75   1      */
+  76   1      while(1);
+  77   1      ////////////////////////////////////////////////////
+  78   1      //    port_close( port );
+  79   1          return( 0 );
+  80   1      } // End of main(void)
+*** WARNING C280 IN LINE 43 OF .\EZ0001.C: 'i': unreferenced local variable
+  81          
+  82          
+  83          #endif
+  84          
+  85          
+  86          
+  87          /*
+  88          
+  89          // #define TNG
+  90          // #define RT99_ADDR		0x1C
+  91          
+  92          // P20 off
+  93          // P21 off
+  94          // P22 on
+  95          //const BYTE xdata reg_addr = 0x0D;
+  96          //BYTE xdata reg_val;
+  97          
+  98          
+  99          
+ 100          main()
+ 101          {
+ 102          //	int i;
+ 103          //	BYTE x;
+ 104          //	EZUSB_InitI2C(); // Initialize EZ-USB I2C controller
+ 105          
+ 106          	for(i=0;i<=7;i++)
+ 107          {
+ 108          	rreg(RCR);
+ 109          //	EZUSB_WriteI2C(RT99_ADDR, 0x01, &reg_addr);
+ 110          //	x = EZUSB_ReadI2C(RT99_ADDR,0x01,&reg_val);
+ 111          
+ 112          }
+ 113          	while(1);
+C51 COMPILER V6.01 EZ0001                                                                  03/16/2005 19:31:53 PAGE 3   
+
+ 114          } // End of Main()
+ 115          */
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    609    ----
+   CONSTANT SIZE    =    256    ----
+   XDATA SIZE       =      1       5
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     11      30
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  3 WARNING(S),  0 ERROR(S)

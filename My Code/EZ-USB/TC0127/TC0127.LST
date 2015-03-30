@@ -1,0 +1,197 @@
+C51 COMPILER V6.01 TC0127                                                                  03/18/2005 15:38:24 PAGE 1   
+
+
+C51 COMPILER 6.01, COMPILATION OF MODULE TC0127
+OBJECT MODULE PLACED IN .\TC0127.OBJ
+COMPILER INVOKED BY: H:\Keil\C51\BIN\C51.EXE .\TC0127.c OPTIMIZE(6,SPEED) DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          //
+   2          //  File........: TC0127.c
+   3          //  Authors.....: Tom Tripp
+   4          //  Description.: Test DR bit LSR.1
+   5          //
+   6          //
+   7          //  Conditions:
+   8          //    IFACE:  SPI
+   9          //    BAUD:   57,600 bps
+  10          //    WORD:   8, E, 2
+  11          //    FIFO:   Yes
+  12          //    INTS:   No
+  13          //
+  14          //  Date........: Feb. 22, 2005
+  15          //
+  16          //  The proper interface can be found in interface.c
+  17          
+  18          #ifndef TC1112_C
+  19          #define TC1112_C
+  20          
+  21          // Interrupt or not? - define only one.
+  22          //#define INT_DRIVEN
+  23          //#define POLLED
+  24          
+  25          // Which interface? - define only one.
+  26          // #define IFACE_SPI 0
+  27          #define IFACE_I2C 1
+  28          
+  29          #include <stdio.h>
+  30          #include <stdlib.h>
+  31          #include <ezusb.h>
+  32          #include <ezregs.h>
+  33          #include "RT99reg.h"      // RT99 Registers and bits
+  34          #include "interface.c"    // SPI/I2C Implementation
+  35          #include "port.c"         // RS232/16550 Implementation
+*** WARNING C182 IN LINE 153 OF \KEIL\C51\INC\INTERFACE.C: pointer to different objects
+*** WARNING C280 IN LINE 21 OF H:\KEIL\C51\INC\PORT.C: 'int_number': unreferenced local variable
+  36          
+  37          #ifdef MONITOR51                         /* Debugging with Monitor-51 needs   */
+              char code reserve [3] _at_ 0x23;         /* space for serial interrupt if     */
+              #endif                                   /* Stop Exection with Serial Intr.   */
+  40          
+  41          #define XON  0x11
+  42          #define XOFF 0x13
+  43          
+  44          char putchar (char c)  
+  45          {
+  46   1      
+  47   1        if (c == '\n')  
+  48   1        {
+  49   2          if (RI_0)  
+*** ERROR C202 IN LINE 49 OF .\TC0127.C: 'RI_0': undefined identifier
+  50   2      	{
+  51   3            if (SBUF0 == XOFF)  
+  52   3      	  {
+C51 COMPILER V6.01 TC0127                                                                  03/18/2005 15:38:24 PAGE 2   
+
+  53   4              do  
+  54   4      		{
+  55   5                RI_0 = 0;
+*** ERROR C202 IN LINE 55 OF .\TC0127.C: 'RI_0': undefined identifier
+  56   5                while (!RI_0);
+*** ERROR C202 IN LINE 56 OF .\TC0127.C: 'RI_0': undefined identifier
+  57   5              }
+  58   4              while (SBUF0 != XON);
+  59   4              RI_0 = 0; 
+*** ERROR C202 IN LINE 59 OF .\TC0127.C: 'RI_0': undefined identifier
+  60   4            }
+  61   3          }
+  62   2          while (!TI_0);
+*** ERROR C202 IN LINE 62 OF .\TC0127.C: 'TI_0': undefined identifier
+  63   2          TI_0 = 0;
+*** ERROR C202 IN LINE 63 OF .\TC0127.C: 'TI_0': undefined identifier
+  64   2          SBUF0 = 0x0d;                         /* output CR  */
+  65   2        }
+  66   1        if (RI_0)  
+*** ERROR C202 IN LINE 66 OF .\TC0127.C: 'RI_0': undefined identifier
+  67   1        {
+  68   2          if (SBUF0 == XOFF)  
+  69   2      	{
+  70   3            do  
+  71   3      	  {
+  72   4              RI_0 = 0;
+*** ERROR C202 IN LINE 72 OF .\TC0127.C: 'RI_0': undefined identifier
+  73   4              while (!RI_0);
+*** ERROR C202 IN LINE 73 OF .\TC0127.C: 'RI_0': undefined identifier
+  74   4            }
+  75   3            while (SBUF0 != XON);
+  76   3            RI_0 = 0; 
+*** ERROR C202 IN LINE 76 OF .\TC0127.C: 'RI_0': undefined identifier
+  77   3          }
+  78   2        }
+  79   1        while (!TI_0);
+*** ERROR C202 IN LINE 79 OF .\TC0127.C: 'TI_0': undefined identifier
+  80   1        TI_0 = 0;
+*** ERROR C202 IN LINE 80 OF .\TC0127.C: 'TI_0': undefined identifier
+  81   1        return (SBUF0 = c);
+  82   1      }
+  83          
+  84          main()
+  85          {
+  86   1        SCON0 = 0x52;    /* SCON */                   /* setup serial port control */
+  87   1        TMOD = 0x20;    /* TMOD */                   /* hardware ( BAUD @MHZ) */
+  88   1        TCON = 0x69;    /* TCON */
+  89   1        TH1 =  0xf6;    /* TH1 */
+  90   1      
+  91   1        	while(1)
+  92   1        	{
+  93   2      		putchar ('J');
+  94   2      	}
+  95   1      }
+  96          ///// Declare Variables Here ///////////////////////
+  97          /*
+  98              BYTE foo, tx[] = "Jesus is Lord!!!";
+  99              BYTE rx[20];
+ 100          	int i;
+ 101              
+ 102          ////////////////////////////////////////////////////
+ 103              PORT *port;
+C51 COMPILER V6.01 TC0127                                                                  03/18/2005 15:38:24 PAGE 3   
+
+ 104              port = port_open( COM1_UART, COM1_INTERRUPT );
+ 105              // Check to see if 
+ 106              if ( port == NULL ) 
+ 107              {
+ 108                  puts( "Failed to open the port!\n" );
+ 109          //        exit( 1 );
+ 110              }
+ 111              port_set( port, 38400L, 'N', 8, 1, YES_FIFO );
+ 112          *///// Your Code Here //////////////////////////////
+ 113          /*
+ 114          while(1)
+ 115          {
+ 116            while( ( rreg( port->uart_base + LSR ) & LSR_DR ) == 0x00 );
+ 117            rreg(port->uart_base + RBR);
+ 118            printf(" %X \n", rreg(port->uart_base + LSR));
+ 119          }
+ 120          
+ 121             // Set Loopback Mode
+ 122          //   wreg( port->uart_base + MCR, MCR_LOOP_BACK );
+ 123          
+ 124          
+ 125          // Send a character, wait for DR high, read RBR
+ 126            for( i = 0 ; i <= 15 ; i++)
+ 127          {
+ 128             //while( ( rreg( port->uart_base + LSR ) & LSR_THRE ) == 0x00 );
+ 129              //wreg( port->uart_base + THR, foo );
+ 130              while( ( rreg( port->uart_base + LSR ) & LSR_DR ) == 0x00 );
+ 131              rx[i] = rreg(port->uart_base + RBR);
+ 132             // foo = rreg(port->uart_base + RBR);
+ 133          //	wreg( port->uart_base + THR, foo );
+ 134              
+ 135          }
+ 136          
+ 137             
+ 138            for( i = 0 ; i <= 16 ; i++)
+ 139            {
+ 140           //   while( ( rreg( port->uart_base + LSR ) & LSR_DR ) == 0x00 );
+ 141              rx[i] = rreg(port->uart_base + RBR);
+ 142          //    err[i] = rreg(port->uart_base + LSR);
+ 143            }
+ 144            
+ 145            // Print and compare
+ 146            for( i = 0 ; i <= 16 ; i++)
+ 147            {
+ 148          //>>>>>>>>>>>>need to make self checking<<<<<<<<<<<<<<<<<
+ 149              putchar(rx[i]);
+ 150          //    putchar('=');
+ 151          //    putchar(tx[i]);
+ 152          //    putchar('\n');
+ 153          //    printf(" %X \n",err[i]);
+ 154            }
+ 155          
+ 156          */
+ 157          //while(1);
+ 158          
+ 159          
+ 160          /*
+ 161          ///////////////////////////////////////////////////
+ 162              port_close( port );
+ 163              return( 0 );*/
+ 164          //} // End of main(void)
+ 165          
+C51 COMPILER V6.01 TC0127                                                                  03/18/2005 15:38:24 PAGE 4   
+
+ 166          #endif
+
+C51 COMPILATION COMPLETE.  2 WARNING(S),  12 ERROR(S)

@@ -1,0 +1,46 @@
+[DisAssemblyWindow]
+NumStates=_ 1
+State 1=_ 1
+[Watch]
+Watch 1=
+Watch 2=
+Watch 3=
+[CodeCoverage]
+State=_ 0
+[Profiling]
+State=_ 0
+[TermIOSettings]
+Filename=_ ""
+InputMode=_ 1
+[Interrupts]
+Enabled=1
+[MemoryMap]
+Enabled=0
+TypeVolition=1
+UnspecRange=1
+ActionState=1
+[Trace]
+Expressions=_ 0
+[Desktop-Debug]
+Wnd0=_ "Disassembly" "open" 44 0 2 0 877 -4 -30 345 159 710 876
+Wnd1=_ "Register" "open" 44 0 2 160 877 -1 -1 50 262 304 880 0 0 3 2 "SPICF" "SPICN"
+Wnd2=_ "CallStack" "open" 44 0 1 -1 -1 -4 -30 5 610 203 904 1
+Wnd3=_ "Watch" "open" 44 0 1 -1 -1 -1 -1 911 240 1275 455 100 100 100 100
+Wnd4=_ "Log" "open" 44 0 1 -1 -1 -4 -30 697 736 1275 931
+Wnd5=_ "Locals" "open" 44 0 1 -1 -1 -1 -1 911 0 1275 240 100 100 100 100
+Wnd6=_ "Terminal I/O" "open" 44 0 1 -1 -1 -1 -1 910 453 1275 717
+Wnd7=_ "Editor-DebugSource" "closed" 44 0 1 -1 -1 -1 -1 66 87 1122 705
+Wnd8=_ "Memory" "closed" 44 0 1 -1 -1 -1 -1 88 116 1144 734 0 0 0 0 0 1 0
+Wnd9=_ "TracePlugin" "closed" 44 0 1 -1 -1 -1 -1 110 145 1166 763 0 0 0
+Maximized=_ 0
+Count=_ 10
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
+[Breakpoints]
+Bp0=_ "Code" "Code:0x1C" 1 0 0 0 "" 0 ""
+Count=1

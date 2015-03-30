@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>0</fileVersion>
+  <configuration>
+    <name>Debug</name>
+    <file>
+      <name>$PROJ_DIR$\HID_KB_MAXQ.C</name>
+      <outputs>
+        <name>$PROJ_DIR$\Debug\Obj\HID_KB_MAXQ.r66</name>
+      </outputs>
+      <inputs>
+        <name>$PROJ_DIR$\SPI.h</name>
+        <name>$TOOLKIT_DIR$\INC\intrinsics.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomaxq200x.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomacro.h</name>
+        <name>$PROJ_DIR$\HIDKB_enum_data.h</name>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\SPI1.c</name>
+      <outputs>
+        <name>$PROJ_DIR$\Debug\Obj\SPI1.r66</name>
+      </outputs>
+      <inputs>
+        <name>$TOOLKIT_DIR$\INC\intrinsics.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomaxq200x.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomacro.h</name>
+        <name>$PROJ_DIR$\spi.h</name>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\SPIfuncs.c</name>
+      <outputs>
+        <name>$PROJ_DIR$\Debug\Obj\SPIfuncs.r66</name>
+      </outputs>
+      <inputs>
+        <name>$TOOLKIT_DIR$\INC\intrinsics.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomaxq200x.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomacro.h</name>
+        <name>$PROJ_DIR$\spi.h</name>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\7_Bulk_Loop.c</name>
+      <outputs>
+        <name>$PROJ_DIR$\Debug\Obj\7_Bulk_Loop.r66</name>
+      </outputs>
+      <inputs>
+        <name>$TOOLKIT_DIR$\INC\intrinsics.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomaxq200x.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomacro.h</name>
+        <name>$PROJ_DIR$\SPI.h</name>
+        <name>$PROJ_DIR$\USB_APA_Data.h</name>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\SPI_1.d66</name>
+      <inputs>
+        <name>$TOOLKIT_DIR$\config\lnkmaxq200x.xcl</name>
+        <name>$PROJ_DIR$\Debug\Obj\SPI1.r66</name>
+        <name>$PROJ_DIR$\Debug\Obj\SPIfuncs.r66</name>
+        <name>$TOOLKIT_DIR$\LIB\clib\clmaxq20m.r66</name>
+      </inputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+  </configuration>
+</project>
+
+

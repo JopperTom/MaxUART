@@ -1,0 +1,95 @@
+A51 MACRO ASSEMBLER  SPIREAD                                                              03/09/2005 20:51:20 PAGE     1
+
+
+MACRO ASSEMBLER A51 V6.01
+OBJECT MODULE PLACED IN .\spiread.OBJ
+ASSEMBLER INVOKED BY: H:\Keil\C51\BIN\A51.EXE .\spiread.a51 SET(SMALL) DEBUG EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     NAME            spireadbyte
+                       2     ;
+                       3     ;       spiread.a51     4-19-00 ott
+                       4     ;       This routine shifts in a byte
+                       5     ;       with the clock and returns it
+                       6     ;       worst case bit rate of 222kHz
+                       7     ;       byte rate of 29 kHz
+                       8     ;
+                       9     
+                      10     ?PR?SPIREADBYTE?MODULE  segment code
+                      11     
+                      12     PUBLIC          spireadbyte
+                      13     
+  0002                14     CLKHIGH equ 00000010B   ;Bitmask to turn clk pin high
+  00FD                15     CLKLOW equ 11111101B            ;Bitmask to turn clk pin low
+  0008                16     BITMASK equ 00001000B   ;Bitmask to read input pin
+                      17     
+  7F98                18     OUTC            XDATA        7F98H
+  7F9B                19     PINSC           XDATA           7F9BH
+  0086                20     DPS             DATA            86H
+                      21     
+----                  22     rseg    ?PR?SPIREADBYTE?MODULE
+0000                  23     spireadbyte:
+                      24     
+0000 907F98           25             mov DPTR,#OUTC  ;point to outc
+0003 E0               26             movx A,@DPTR    ;read outc
+0004 FC               27             mov R4,A        ;save outc
+0005 4402             28             orl A,#CLKHIGH  ;set clock high byte
+0007 FD               29             mov R5,A        ;save contents of clkhigh
+0008 EC               30             mov A,R4        ;read outc
+0009 54FD             31             anl A,#CLKLOW   ;set clock low byte
+000B FC               32             mov R4,A        ;save contents of clklow
+000C 0586             33             inc DPS         ;switch pointer 1
+000E 907F9B           34             mov DPTR,#PINSC ;point second pointer to pinsc
+0011 0586             35             inc DPS         ;switch pointer 0
+0013 7E08             36             mov R6,#8       ;set up loop
+0015                  37     loop:   
+0015 ED               38             mov A, R5       ;get contents of clkhigh
+0016 F0               39             movx @DPTR, A   ;output data
+0017 0586             40             inc DPS         ;switch pointer 1
+0019 E0               41             movx A,@DPTR    ;read in port c
+001A 5408             42             anl A,#BITMASK  ;mask off input pin
+001C 7003             43             jnz highbit     ;if result is not zero
+001E C3               44             clr c           ;clear carry
+001F 8001             45             sjmp skip       ;skip carry set
+0021                  46     highbit:
+0021 D3               47             setb c          ;set carry
+0022                  48     skip:   
+0022 0586             49             inc DPS         ;switch pointer 0
+0024 EC               50             mov A,R4        ;get contents of clklow
+0025 F0               51             movx @DPTR,A    ;output low clock
+0026 EF               52             mov A,R7        ;move byte into A
+0027 33               53             rlc A           ;rotate bit in
+0028 FF               54             mov R7,A        ;save new byte
+0029 DEEA             55             djnz R6,loop    ;repeat eight times
+002B 22               56             ret
+                      57             end
+                             
+A51 MACRO ASSEMBLER  SPIREAD                                                              03/09/2005 20:51:20 PAGE     2
+
+                             
+A51 MACRO ASSEMBLER  SPIREAD                                                              03/09/2005 20:51:20 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                 T Y P E  V A L U E   ATTRIBUTES
+
+?PR?SPIREADBYTE?MODULE  C SEG    002CH       REL=UNIT
+BITMASK. . . . . . . .  N NUMB   0008H   A   
+CLKHIGH. . . . . . . .  N NUMB   0002H   A   
+CLKLOW . . . . . . . .  N NUMB   00FDH   A   
+DPS. . . . . . . . . .  D ADDR   0086H   A   
+HIGHBIT. . . . . . . .  C ADDR   0021H   R   SEG=?PR?SPIREADBYTE?MODULE
+LOOP . . . . . . . . .  C ADDR   0015H   R   SEG=?PR?SPIREADBYTE?MODULE
+OUTC . . . . . . . . .  X ADDR   7F98H   A   
+PINSC. . . . . . . . .  X ADDR   7F9BH   A   
+SKIP . . . . . . . . .  C ADDR   0022H   R   SEG=?PR?SPIREADBYTE?MODULE
+SPIREADBYTE. . . . . .  C ADDR   0000H   R   SEG=?PR?SPIREADBYTE?MODULE
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

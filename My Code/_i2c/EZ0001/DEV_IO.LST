@@ -1,0 +1,66 @@
+C51 COMPILER V6.01 DEV_IO                                                                  06/27/2005 19:38:59 PAGE 1   
+
+
+C51 COMPILER 6.01, COMPILATION OF MODULE DEV_IO
+OBJECT MODULE PLACED IN .\DEV_IO.OBJ
+COMPILER INVOKED BY: H:\Keil\C51\BIN\C51.EXE .\DEV_IO.C OPTIMIZE(6,SPEED) DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          #include <ezusb.h>
+   2          #include <ezregs.h>
+   3          #include "RT99reg.h"
+   4          
+   5          //#define TNG
+   6          #define RT99_ADDR		0x1C
+   7          
+   8          // P20 on
+   9          // P21 on
+  10          // P22 on
+  11          WORD xdata reg_dat = 0x0722;
+  12          BYTE xdata reg_val;
+  13          const BYTE xdata reg_addr = 0x07;
+  14          const BYTE xdata *p_data = &reg_dat;
+  15          
+  16          
+  17          main()
+  18          {
+  19   1      	EZUSB_InitI2C(); // Initialize EZ-USB I2C controller
+  20   1      	
+  21   1      	// Read the register value
+  22   1      	EZUSB_WriteI2C(RT99_ADDR, 0x01, &reg_addr);
+  23   1      	EZUSB_ReadI2C(RT99_ADDR,0x01,&reg_val);
+  24   1      
+  25   1      
+  26   1      	// Write a value to the register
+  27   1      	EZUSB_WriteI2C(RT99_ADDR, 0x02, p_data);
+  28   1      //	EZUSB_ReadI2C(RT99_ADDR,0x01,&reg_val);
+  29   1      
+  30   1      
+  31   1      	// Read new value from register
+  32   1      	EZUSB_WriteI2C(RT99_ADDR, 0x01, &reg_addr);
+  33   1      	EZUSB_ReadI2C(RT99_ADDR,0x01,&reg_val);
+  34   1      
+  35   1      
+  36   1      
+  37   1      
+  38   1      
+  39   1      while(1);
+  40   1      } // End of Main()
+  41          
+  42          
+  43          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     85    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      4    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

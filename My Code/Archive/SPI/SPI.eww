@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\EZconversion.ewp</path>
+  </project>
+  <project>
+    <path>C:\IAR Projects\QSPI\prjQSPI.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\proj2.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\SPI_1.ewp</path>
+  </project>
+  <batchBuild/>
+</workspace>
+
+

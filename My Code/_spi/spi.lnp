@@ -1,0 +1,8 @@
+"spi.obj",
+"spiread.obj",
+"spiwrite.obj",
+"H:\Cypress\USB\Target\Lib\Ezusb\Ezusb.lib" 
+TO "spi" 
+RAMSIZE(256) 
+CODE( 0X0080-0XFFFF )
+XDATA( 0X1000-0XFFFF )

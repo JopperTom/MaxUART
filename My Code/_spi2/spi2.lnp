@@ -1,0 +1,7 @@
+"spi2.obj",
+"H:\Cypress\USB\Target\Lib\Ezusb\Ezusb.lib",
+"RT99reg.obj" 
+TO "spi2" 
+RAMSIZE(256) 
+CODE( 0X0080-0XFFFF )
+XDATA( 0X1000-0XFFFF )

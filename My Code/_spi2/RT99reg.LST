@@ -1,0 +1,130 @@
+C51 COMPILER V6.01 RT99REG                                                                 03/14/2005 17:51:46 PAGE 1   
+
+
+C51 COMPILER 6.01, COMPILATION OF MODULE RT99REG
+OBJECT MODULE PLACED IN .\RT99reg.OBJ
+COMPILER INVOKED BY: H:\Keil\C51\BIN\C51.EXE .\RT99reg.h DEBUG OBJECTEXTEND SYMBOLS
+
+stmt level    source
+
+   1          #ifndef RT99REG_H
+   2          #define RT99REG_H
+   3          
+   4          
+   5          #define CS_HI // P05 |= 0x10;          // Macros to set the MAXQ2000 SPI CS signal (P54) high and low
+   6          #define CS_LO // P05 &= ~0x10;
+   7          #define SDA_HI                       // Macros to set the               to high and low
+   8          #define SDA_LO
+   9          #define SCL_HI 
+  10          #define SCL_LO
+  11          #define UVLO_HI //P07 |= 0x01;
+  12          #define UVLO_LO //P07 &= ~0x01;
+  13          
+  14          //void testDELAY(int x){int y; for( y=0; y<x ; y++);}
+  15          
+  16          // This group of defines creates all the definitions used
+  17          // to access registers and bit fields.
+  18          #define RBR               0x00    /* Receive buffer REGISTER      */
+  19          #define THR               0x00    /* Transmit holding REGISTER    */
+  20          #define IER               0x01    /* Interrupt Enable REGISTER    */
+  21          #define IER_RX_DATA       0x01      /* Enable RX interrupt BIT      */
+  22          #define IER_THRE          0x02      /* Enable TX interrupt BIT      */
+  23          #define IER_LINE_STATUS   0x04      /* Enable Line Status INT BIT   */
+  24          #define IER_MODEM_STATUS  0x08      /* Enable Modem Status INT BIT  */
+  25          #define IIR               0x02    /* Interrupt ID REGISTER        */
+  26          #define IIR_MODEM_STATUS  0x00      /* Modem stat. interrupt ID     */
+  27          #define IIR_TRANSMIT      0x02      /* Transmit interrupt ID        */
+  28          #define IIR_RECEIVE       0x04      /* Receive interrupt ID         */
+  29          #define IIR_LINE_STATUS   0x06      /* Line stat. interrupt ID      */
+  30          #define IIR_CHAR_TIMEOUT  0x0C      /* Char. Timeout interrupt ID   */
+  31          #define FCR               0x02    /* FIFO Control REGISTER        */
+  32          #define FCR_FIFO_ENABLE   0x01      /* Bit that enables the FIFO    */
+  33          #define FCR_RX_FIFO_RESET 0x02      /* Bit that resets the rx FIFO  */
+  34          #define FCR_TX_FIFO_RESET 0x04      /* Bit that resets the tx FIFO  */
+  35          #define FCR_RX_TRIG_LSB   0x40      /* Bit that sets the rx trigger */
+  36          #define FCR_RX_TRIG_MSB   0x80      /* Bit that sets the rx trigger */
+  37          #define LCR               0x03    /* Line control REGISTER        */
+  38          #define LCR_DLAB          0x80      /* Divisor access bit           */
+  39          #define LCR_EVEN_PARITY   0x18      /* Set parity 'E' bits          */
+  40          #define LCR_ODD_PARITY    0x08      /* Set parity 'O' bits          */
+  41          #define LCR_MARK_PARITY   0x28      /* Set parity 'M' bits          */
+  42          #define LCR_SPACE_PARITY  0x38      /* Set parity 'S' bits          */
+  43          #define LCR_NO_PARITY     0x00      /* Set parity 'N' bits          */
+  44          #define LCR_1_STOP_BIT    0x00      /* Bits to set 1 stop bit       */
+  45          #define LCR_2_STOP_BITS   0x04      /* Bits to set 2 stop bits      */
+  46          #define LCR_5_DATA_BITS   0x00      /* Bits to set 5 data bits      */
+  47          #define LCR_6_DATA_BITS   0x01      /* Bits to set 6 data bits      */
+  48          #define LCR_7_DATA_BITS   0x02      /* Bits to set 7 data bits      */ 
+  49          #define LCR_8_DATA_BITS   0x03      /* Bits to set 8 data bits      */
+  50          #define LCR_SET_BREAK     0x40      /* Bit to set a break cond.     */
+  51          #define MCR               0x04    /* Modem control REGISTER       */
+  52          #define MCR_RTS           0x02      /* Bit to turn on RTS           */
+  53          #define MCR_LOOP_BACK     0x10      /* Bit to turn on LoopBack      */
+  54          #define LSR               0x05    /* Line Status REGISTER         */
+  55          #define LSR_DR            0x01      /* Bit that shows RX Data Ready */
+C51 COMPILER V6.01 RT99REG                                                                 03/14/2005 17:51:46 PAGE 2   
+
+  56          #define LSR_OE            0x02      /* Bit that shows Overrun Error */
+  57          #define LSR_PE            0x04      /* Bit that shows Parity Error  */
+  58          #define LSR_FE            0x08      /* Bit that shows Framing Error */
+  59          #define LSR_BI            0x10      /* Bit that shows Break Interrt */
+  60          #define LSR_THRE          0x20      /* Bit that shows THR empty     */
+  61          #define LSR_TEMT          0x40      /* Bit that shows TSR+THR empty */
+  62          #define LSR_FERR          0x80      /* Bit that shows RX FIFO error */
+  63          #define MSR               0x06    /* Modem Status REGISTER        */
+  64          #define MSR_DELTA_CTS     0x01      /* Bit that shows Delta in CTS  */
+  65          #define MSR_CTS           0x10      /* Bit that shows State of CTS  */
+  66          #define DLL               0x00    /* Divisor latch LSB            */
+  67          #define DLM               0x01    /* Divisor latch MSB            */
+  68          #define SCR               0x07    /* Scratch REGISTER             */
+  69          // Below here are not 16550 registers
+  70          #define xDLL              0x08    /* xtended Divisor Latch LSB Table 13.4.2.2   */
+  71          #define xDLM              0x09    /* xtended Divisor Latch MSB Table 13.4.2.2   */
+  72          #define NO_NAME           0x0A    /* Read LSR + RBR registers  Table 13.4.2.2   */
+  73          #define HCR               0x1F    /* Hardware Control REGISTER Table 13.4.2.2   */
+  74          #define TST               0x2F    /* Test REGISTER             Table 13.4.2.2   */
+  75          #define RCR               0x000D    /* Revision REGISTER            */
+  76          #define EFR               0x0E    /* Extended Function REGISTER   */
+  77          #define EFR_AUTO_CTS      0x80      /* Bit to turn on AutoCTS       */
+  78          #define EFR_AUTO_RTS      0x40      /* Bit to turn on AutoRTS       */
+  79          #define EFR_SPI_MODE      0x20      /* Bit to change SPI modes      */
+  80          #define EFR_RESET         0x01      /* Bit to turn on Manual Reset  */
+  81          #define HCR               0x1F    /* Hardware Control REGISTER    */
+  82          #define HCR_WAKE_ON_RX    0x20      /* Bit to turn on Wake on RX    */
+  83          #define HCR_WAKE          0x00      /* Bit to wake from sleep       */
+  84          #define HCR_SLEEP         0x40      /* Bit to enter sleep mode      */
+  85          #define HCR_SWSHDN        0xC0      /* Bit to SW Shutdown           */
+  86          
+  87          #define TST               0x2F    /* Test REGISTER                */
+  88          
+  89          
+  90          
+  91          
+  92          // Various constants used only in this program.
+  93          //#define INT_CONTROLLER   0x20  /* The address of the 8259*/
+  94          //#define EOI              0x20  /* The end of int command */
+  95          //#define BREAK_VECTOR     0x23  /* The CTRL-BREAK vector  */
+  96          #define YES_FIFO          0x01    /* Enable FIFO             */
+  97          #define NO_FIFO           0x00    /* Disable FIFO            */
+  98          
+  99          #endif
+C51 COMPILER V6.01 RT99REG                                                                 03/14/2005 17:51:46 PAGE 3   
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
